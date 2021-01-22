@@ -51,7 +51,7 @@ export class MessageCommand implements Command {
                 if (args[1] === undefined) return message.channel.send("**Ошибка!** Не указан текст сообщения!")
 
                 findMessage(message.channel as TextChannel, args[0])
-                    .then((msg) => msg.edit(message.content.match(/message edit ([\d]+) (.+)/s)[2]))
+                    .then((msg) => msg.edit(message.content.match(/edit ([\d]+) (.+)/s)[2]))
                     .catch((e) => {
                         if (e.code === 50005)
                             message.channel.send("**Ошибка!** Нельзя редактировать сообщения других пользоветелей!")
