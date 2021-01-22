@@ -1,4 +1,5 @@
-import { Message, MessageEmbed } from "discord.js"
+import { findMessage } from "../../core/Utils"
+import { Message, MessageEmbed, TextChannel } from "discord.js"
 
 import Bot from "../../index"
 import { Command, CommandCategory } from "../Command"
@@ -10,15 +11,14 @@ export class MessageCommand implements Command {
     usage = ["get [message_id]", "send [текст сообщения]", "edit [message_id] [текст сообщения]"]
     aliases = ["m"]
 
-    run(message: Message, [method, ...args]: string[]) {
+    run(message: Message, [method, ...args]: string[]): any {
         if (method === undefined) return message.channel.send("**Ошибка при вводе команды!**")
 
         switch (method) {
             case "get":
                 if (args[0] === undefined) return message.channel.send("**Ошибка!** Не указан `id` сообщения!")
 
-                message.channel.messages
-                    .fetch(args[0])
+                findMessage(message.channel as TextChannel, args[0])
                     .then((msg) => {
                         // TODO придумать что-то с Embed сообщениями
                         message.channel.send(
@@ -50,8 +50,7 @@ export class MessageCommand implements Command {
                 if (args[0] === undefined) return message.channel.send("**Ошибка!** Не указан `id` сообщения!")
                 if (args[1] === undefined) return message.channel.send("**Ошибка!** Не указан текст сообщения!")
 
-                message.channel.messages
-                    .fetch(args[0])
+                findMessage(message.channel as TextChannel, args[0])
                     .then((msg) => msg.edit(message.content.match(/message edit ([\d]+) (.+)/s)[2]))
                     .catch((e) => {
                         if (e.code === 50005)
