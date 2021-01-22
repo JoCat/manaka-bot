@@ -12,8 +12,8 @@ export interface Command {
 }
 
 export enum CommandCategory {
-    ADMIN = 'admin',
-    EVENTS = 'events',
-    GENERAL = 'general',
-    MUSIC = 'music'
+    ADMIN = "admin",
+    EVENTS = "events",
+    GENERAL = "general",
+    MUSIC = "music",
 }
