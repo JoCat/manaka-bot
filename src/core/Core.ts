@@ -23,10 +23,8 @@ export default class Core {
         this.client.login(this.config.botToken)
     }
 
-    async voiceStateUpdate(after: VoiceState) {
+    async voiceStateUpdate(after: VoiceState): Promise<void> {
         const voiceChannels = ["741028100317642802"]
-        // TODO Временные костыли, придумать как сделать лучше
-        const excludeVoiceChannels = ["741028052103987213", "741029633369178112", "741029687773626429"]
 
         if (voiceChannels.includes(after.channelID)) {
             after.guild.channels
@@ -53,7 +51,6 @@ export default class Core {
                     .filter(
                         (el) =>
                             !voiceChannels.includes(el.id) &&
-                            !excludeVoiceChannels.includes(el.id) &&
                             el.members.size === 0
                     )
                     .forEach((el) => el.delete("В голосовой комнате 0 людей!"))
