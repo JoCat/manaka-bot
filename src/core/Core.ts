@@ -26,11 +26,6 @@ export default class Core {
     async voiceStateUpdate(after: VoiceState): Promise<void> {
         const voiceChannels = ["741028100317642802"]
 
-        if (after.selfDeaf && after.selfMute) {
-            after.kick()
-            return
-        }
-
         if (voiceChannels.includes(after.channelID)) {
             after.guild.channels
                 .create(`Комната ${after.member.user.username}`, {
