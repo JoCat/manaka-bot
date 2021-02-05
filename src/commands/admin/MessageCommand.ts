@@ -1,6 +1,6 @@
-import { findMessage } from "../../core/Utils"
 import { Message, MessageEmbed, TextChannel } from "discord.js"
 
+import { findMessage } from "../../core/Utils"
 import Bot from "../../index"
 import { Command, CommandCategory } from "../Command"
 

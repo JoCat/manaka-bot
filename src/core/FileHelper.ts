@@ -2,8 +2,7 @@ import * as fs from "fs"
 import * as path from "path"
 
 export default class FileHelper {
-
-    static rootDir: string = path.resolve(__dirname, '../..')
+    static rootDir: string = path.resolve(__dirname, "../..")
     static runtimeDir: string = path.resolve(FileHelper.rootDir, "runtime")
 
     static createMissing(): void {

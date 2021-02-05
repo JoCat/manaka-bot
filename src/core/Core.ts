@@ -48,12 +48,8 @@ export default class Core {
             .filter((el) => voiceChannels.includes(el.id))
             .forEach((el: VoiceChannel) =>
                 el.parent.children
-                    .filter(
-                        (el) =>
-                            !voiceChannels.includes(el.id) &&
-                            el.members.size === 0
-                    )
-                    .forEach((el) => el.delete("В голосовой комнате 0 людей!"))
+                    .filter((c) => c.type === "voice" && c.members.size === 0 && !voiceChannels.includes(c.id))
+                    .forEach((c) => c.delete("В голосовой комнате 0 людей!"))
             )
     }
 }

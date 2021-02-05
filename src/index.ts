@@ -1,5 +1,5 @@
-import FileHelper from "./core/FileHelper"
 import Core from "./core/Core"
+import FileHelper from "./core/FileHelper"
 
 FileHelper.createMissing()
 
