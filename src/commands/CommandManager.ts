@@ -57,6 +57,13 @@ export default class CommandManager {
     }
 
     executeCommand(message: Message): any {
+        if (message.content.toLowerCase().includes('модератор')) { // Speecial for Darari#8165
+            message.channel.send('https://youtu.be/WHf6d27l08I')
+        }
+        if (message.content.toLowerCase().includes('<:kekw:773085584671244299>')) { // Speecial for Will0376#5780
+            message.channel.send('https://youtu.be/vMG98vfhU08')
+        }
+
         const prefix = Bot.config.getProperty("prefix")
 
         if (message.author.bot) return
