@@ -33,12 +33,11 @@ export default class Core {
                     parent: ((await this.client.channels.fetch(after.channelID)) as VoiceChannel).parent,
                 })
                 .then((channel) => {
-                    channel.overwritePermissions([
-                        {
-                            id: after.id,
-                            allow: ["VIEW_CHANNEL", "MANAGE_CHANNELS", "CONNECT"],
-                        },
-                    ])
+                    channel.createOverwrite(after.id, {
+                        VIEW_CHANNEL: true,
+                        MANAGE_CHANNELS: true,
+                        CONNECT: true
+                    })
                     after.setChannel(channel)
                 })
         }
