@@ -1,4 +1,4 @@
-import * as crypto from "crypto"
+import crypto from "crypto"
 
 import Bot from "../index"
 import EventHandler from "./EventHandler"

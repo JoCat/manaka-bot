@@ -5,6 +5,10 @@ import { MessageCommand } from "./admin/MessageCommand"
 import { RoleReactionCommand } from "./admin/RoleReactionCommand"
 import { Command, CommandCategory } from "./Command"
 import { HelpCommand } from "./general/HelpCommand"
+import { PlayCommand } from "./music/PlayCommand"
+import { PlaylistCommand } from "./music/PlaylistCommand"
+import { SkipCommand } from "./music/SkipCommand"
+import { StopCommand } from "./music/StopCommand"
 
 export default class CommandManager {
     commands: Collection<string, Command> = new Collection()
@@ -18,6 +22,10 @@ export default class CommandManager {
         this.registerCommand(new HelpCommand())
         this.registerCommand(new MessageCommand())
         this.registerCommand(new RoleReactionCommand())
+        this.registerCommand(new PlayCommand())
+        this.registerCommand(new SkipCommand())
+        this.registerCommand(new StopCommand())
+        this.registerCommand(new PlaylistCommand())
     }
 
     registerCommand(command: Command): void {
@@ -35,7 +43,7 @@ export default class CommandManager {
         else return undefined
     }
 
-    checkPermissions(command: Command, userID: string) {
+    checkPermissions(command: Command, userID: string): boolean {
         if (command.category === CommandCategory.ADMIN || command.category === CommandCategory.EVENTS) {
             let allowed = false
 
@@ -57,8 +65,9 @@ export default class CommandManager {
     }
 
     executeCommand(message: Message): any {
-        if (message.content.toLowerCase().includes('модератор')) { // Speecial for Darari#8165
-            message.channel.send('https://youtu.be/WHf6d27l08I')
+        if (message.content.toLowerCase().includes("модератор")) {
+            // Speecial for Darari#8165
+            message.channel.send("https://youtu.be/WHf6d27l08I")
         }
         // if (message.content.toLowerCase().includes('<:kekw:773085584671244299>')) { // Speecial for Will0376#5780
         //     message.channel.send('https://youtu.be/vMG98vfhU08')

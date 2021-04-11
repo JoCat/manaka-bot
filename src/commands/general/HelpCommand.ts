@@ -10,7 +10,7 @@ export class HelpCommand implements Command {
     usage = ["", "[command name]"]
     aliases = ["commands"]
 
-    run(message: Message, args: string[]) {
+    run(message: Message, args: string[]): any {
         const prefix = Bot.config.getProperty("prefix")
         const color = Bot.config.getProperty("color")
 
@@ -23,9 +23,10 @@ export class HelpCommand implements Command {
                 return `**${categoryName}:**\n${cmdList}\n`
             }
 
-            let data = []
+            const data = []
 
             data.push(list(CommandCategory.GENERAL, "Основные"))
+            data.push(list(CommandCategory.MUSIC, "Музыкальные"))
 
             if (message.member.id === "199231799124164608") {
                 data.push(list(CommandCategory.ADMIN, "Админские"))
@@ -35,7 +36,11 @@ export class HelpCommand implements Command {
                 `Напишите \`${prefix} help\` и \`[command name]\`, чтобы получить подробную информацию. **Например:** \`${prefix} help help\``
             )
 
-            let embed = new MessageEmbed().setColor(color).setDescription(data).setTimestamp().setTitle("Список команд")
+            const embed = new MessageEmbed()
+                .setColor(color)
+                .setDescription(data)
+                .setTimestamp()
+                .setTitle("Список команд")
             message.channel.send({ embed: embed, split: true })
             message.delete()
             return

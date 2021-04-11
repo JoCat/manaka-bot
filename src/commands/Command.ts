@@ -1,12 +1,12 @@
 import { Message } from "discord.js"
 
 export interface Command {
-    name: string
-    category: CommandCategory
-    description: string
-    usage?: string[]
-    aliases?: string[]
-    cooldown?: number
+    readonly name: string
+    readonly category: CommandCategory
+    readonly description: string
+    readonly usage?: string[]
+    readonly aliases?: string[]
+    readonly cooldown?: number
 
     run(message: Message, args: string[]): any
 }

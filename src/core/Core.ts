@@ -4,6 +4,7 @@ import CommandManager from "./../commands/CommandManager"
 import ConfigManager from "./ConfigManager"
 import EventsManager from "./EventsManager"
 import JsonDBManager from "./JsonDBManager"
+import MusicManager from "./music/MusicManager"
 
 export default class Core {
     client = new Client()
@@ -11,6 +12,7 @@ export default class Core {
     commands = new CommandManager()
     jsonDB = new JsonDBManager()
     events = new EventsManager()
+    music = new MusicManager()
 
     constructor() {
         this.client.on("message", (m) => this.commands.executeCommand(m))
@@ -36,7 +38,7 @@ export default class Core {
                     channel.createOverwrite(after.id, {
                         VIEW_CHANNEL: true,
                         MANAGE_CHANNELS: true,
-                        CONNECT: true
+                        CONNECT: true,
                     })
                     after.setChannel(channel)
                 })
