@@ -15,35 +15,19 @@ export default class EventHandler {
         this.handler = this.eventHandler
     }
 
-    async eventHandler(data: any) {
+    async eventHandler(data: any): Promise<void> {
         let reactMember = await (await Bot.client.guilds.fetch(data.d.guild_id)).members.fetch(data.d.user_id)
         if (reactMember.user.bot) return
 
         // Обновляем инфу
         reactMember = await reactMember.fetch(true)
 
-        // if (data.t === "MESSAGE_REACTION_ADD") {
-        //     if (!reactMember.roles.cache.has(this.roleID)) {
-        //         reactMember.roles.add(this.roleID)
-        //     }
-        // }
-
-        // if (data.t === "MESSAGE_REACTION_REMOVE") {
-        //     if (reactMember.roles.cache.has(this.roleID)) {
-        //         reactMember.roles.remove(this.roleID)
-        //     }
-        // }
-
-        if (data.t === "MESSAGE_REACTION_REMOVE") {
-            if (!reactMember.roles.cache.has(this.roleID)) {
-                reactMember.roles.add(this.roleID)
-            }
+        if (data.t === "MESSAGE_REACTION_ADD" && !reactMember.roles.cache.has(this.roleID)) {
+            reactMember.roles.add(this.roleID)
         }
 
-        if (data.t === "MESSAGE_REACTION_ADD") {
-            if (reactMember.roles.cache.has(this.roleID)) {
-                reactMember.roles.remove(this.roleID)
-            }
+        if (data.t === "MESSAGE_REACTION_REMOVE" && reactMember.roles.cache.has(this.roleID)) {
+            reactMember.roles.remove(this.roleID)
         }
     }
 }
