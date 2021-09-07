@@ -5,7 +5,9 @@ import ytdl, { getInfo } from "ytdl-core-discord"
 
 import Bot from "../../index"
 
-type UnboxPromise<T extends Promise<any>> = T extends Promise<infer U> ? U : any
+type ReturnPromiseType<T extends (...args: any) => Promise<any>> = T extends (...args: any) => Promise<infer R>
+    ? R
+    : any
 
 class Playlist extends EventEmitter {
     private connection: VoiceConnection
@@ -32,11 +34,8 @@ class Playlist extends EventEmitter {
         this.songs.push(song)
         if (this.connection) return message.channel.send(`${song.title} добавлена в очередь!`)
 
-        const voiceChannel = message.member.voice.channel
-        if (!voiceChannel) return message.channel.send("Вы не в голосовом канале!")
-
         try {
-            this.connection = await voiceChannel.join()
+            this.connection = await message.member.voice.channel.join()
             message.channel.send(
                 new MessageEmbed()
                     .setColor(Bot.config.getProperty("color"))
@@ -75,7 +74,7 @@ class Playlist extends EventEmitter {
     }
 
     private async getSongData(link: string): Promise<Track> {
-        let songInfo: UnboxPromise<ReturnType<typeof getInfo>>
+        let songInfo: ReturnPromiseType<typeof getInfo>
         try {
             songInfo = await getInfo(link)
         } catch (error) {

@@ -12,7 +12,12 @@ export class PlayCommand implements Command {
 
     async run(message: Message, [link]: string[]): Promise<any> {
         if (link === undefined) return message.channel.send("Вы не указали ссылку!")
-        await Bot.music.getPlaylist(message.guild.id).addTrack(link, message)
+        if (!message.member.voice.channel) return message.channel.send("Вы не в голосовом канале!")
+        try {
+            await Bot.music.getPlaylist(message.guild.id).addTrack(link, message)
+        } catch (error) {
+            return message.channel.send(error.message)
+        }
         message.delete()
     }
 }
