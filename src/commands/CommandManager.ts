@@ -38,13 +38,18 @@ export default class CommandManager {
     }
 
     getCommand(commandName: string): Command | undefined {
-        if (this.commands.has(commandName)) return this.commands.get(commandName)
-        else if (this.commandAliases.has(commandName)) return this.commands.get(this.commandAliases.get(commandName))
+        if (this.commands.has(commandName))
+            return this.commands.get(commandName)
+        else if (this.commandAliases.has(commandName))
+            return this.commands.get(this.commandAliases.get(commandName))
         else return undefined
     }
 
     checkPermissions(command: Command, userID: string): boolean {
-        if (command.category === CommandCategory.ADMIN || command.category === CommandCategory.EVENTS) {
+        if (
+            command.category === CommandCategory.ADMIN ||
+            command.category === CommandCategory.EVENTS
+        ) {
             let allowed = false
 
             if (command.category === CommandCategory.ADMIN) {
@@ -65,14 +70,6 @@ export default class CommandManager {
     }
 
     executeCommand(message: Message): any {
-        if (message.content.toLowerCase().includes("модератор")) {
-            // Speecial for Darari#8165
-            message.channel.send("https://youtu.be/WHf6d27l08I")
-        }
-        // if (message.content.toLowerCase().includes('<:kekw:773085584671244299>')) { // Speecial for Will0376#5780
-        //     message.channel.send('https://youtu.be/vMG98vfhU08')
-        // }
-
         const prefix = Bot.config.getProperty("prefix")
 
         if (message.author.bot) return
@@ -85,7 +82,9 @@ export default class CommandManager {
 
         if (command) {
             if (!this.checkPermissions(command, message.member.id))
-                return message.channel.send("У вас нет прав для выполнения этой команды!")
+                return message.channel.send(
+                    "У вас нет прав для выполнения этой команды!"
+                )
             command.run(message, args)
         } else message.channel.send("Команда не найдена!")
     }
