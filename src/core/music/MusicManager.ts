@@ -3,12 +3,12 @@ import Playlist from "./Playlist"
 export default class MusicManager {
     private playlists: Map<string, Playlist> = new Map()
 
-    getPlaylist(id: string): Playlist {
-        if (!this.playlists.has(id)) this.createPlaylist(id)
+    public getPlaylist(id: string): Playlist {
+        if (!this.hasPlaylist(id)) this.createPlaylist(id)
         return this.playlists.get(id)
     }
 
-    hasPlaylist(id: string): boolean {
+    public hasPlaylist(id: string): boolean {
         return this.playlists.has(id)
     }
 

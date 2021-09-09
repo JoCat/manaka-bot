@@ -42,27 +42,16 @@ export default class CommandManager {
             return this.commands.get(commandName)
         else if (this.commandAliases.has(commandName))
             return this.commands.get(this.commandAliases.get(commandName))
-        else return undefined
     }
 
+    // TODO Rework
     checkPermissions(command: Command, userID: string): boolean {
-        if (
-            command.category === CommandCategory.ADMIN ||
-            command.category === CommandCategory.EVENTS
-        ) {
+        if (command.category === CommandCategory.ADMIN) {
             let allowed = false
 
-            if (command.category === CommandCategory.ADMIN) {
-                if (userID === "199231799124164608") allowed = true
-                // if (checkPermission('admin', message.member)) {
-                //     allowed = true;
-                // }
-            }
-
-            // if (command.category === CommandCategory.EVENTS) {
-            //     if (checkPermission('event_manager', message.member)) {
-            //         allowed = true;
-            //     }
+            if (userID === "199231799124164608") allowed = true
+            // if (checkPermission('admin', message.member)) {
+            //     allowed = true;
             // }
 
             return allowed
@@ -70,15 +59,14 @@ export default class CommandManager {
     }
 
     executeCommand(message: Message): any {
-        const prefix = Bot.config.getProperty("prefix")
+        const prefix = Bot.config.getConfig().prefix
 
         if (message.author.bot) return
-        if (message.channel.type != "text") return
+        if (message.channel.type !== "text") return
         if (!message.content.startsWith(`${prefix} `)) return
 
         const args = message.content.slice(prefix.length).trim().split(/ +/)
-        const commandName = args.shift().toLowerCase()
-        const command = this.getCommand(commandName)
+        const command = this.getCommand(args.shift().toLowerCase())
 
         if (command) {
             if (!this.checkPermissions(command, message.member.id))

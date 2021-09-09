@@ -1,6 +1,6 @@
 import { Message, MessageEmbed, TextChannel } from "discord.js"
 
-import { findMessage } from "../../core/Utils"
+import { findMessage } from "../../core/helpers/Utils"
 import Bot from "../../index"
 import { Command, CommandCategory } from "../Command"
 
@@ -8,63 +8,91 @@ export class MessageCommand implements Command {
     name = "message"
     category = CommandCategory.ADMIN
     description = "управление сообщениями"
-    usage = ["get [message_id]", "send [текст сообщения]", "edit [message_id] [текст сообщения]"]
+    usage = [
+        "get [message_id]",
+        "send [текст сообщения]",
+        "edit [message_id] [текст сообщения]",
+    ]
     aliases = ["m"]
 
-    run(message: Message, [method, ...args]: string[]): any {
-        if (method === undefined) return message.channel.send("**Ошибка при вводе команды!**")
+    async run(message: Message, [method, ...args]: string[]): Promise<any> {
+        if (method === undefined)
+            return message.channel.send("**Ошибка при вводе команды!**")
 
         switch (method) {
             case "get":
-                if (args[0] === undefined) return message.channel.send("**Ошибка!** Не указан `id` сообщения!")
-
-                findMessage(message.channel as TextChannel, args[0])
-                    .then((msg) => {
-                        // TODO придумать что-то с Embed сообщениями
-                        message.channel.send(
-                            new MessageEmbed()
-                                .setColor(Bot.config.getProperty("color"))
-                                .setDescription(msg.content)
-                                .setAuthor(msg.author.username, msg.author.avatarURL())
-                                .setTitle("Содержание сообщения:")
-                        )
-                    })
-                    .catch((e) => {
-                        if (e.code === 10008) message.channel.send("Сообщение не найдено")
-                        else {
-                            message.channel.send("При выполнении команды произошла ошибка")
-                            console.error(e)
-                        }
-                    })
+                if (args[0] === undefined)
+                    return message.channel.send(
+                        "**Ошибка!** Не указан `id` сообщения!"
+                    )
+                try {
+                    const msg = await findMessage(
+                        message.channel as TextChannel,
+                        args[0]
+                    )
+                    // TODO придумать что-то с Embed сообщениями
+                    message.channel.send(
+                        new MessageEmbed()
+                            .setColor(Bot.config.getConfig().color)
+                            .setDescription(msg.content)
+                            .setAuthor(
+                                msg.author.username,
+                                msg.author.avatarURL()
+                            )
+                            .setTitle("Содержание сообщения:")
+                    )
+                } catch (error) {
+                    if (error.code === 10008)
+                        return message.channel.send("Сообщение не найдено")
+                    message.channel.send(
+                        "При выполнении команды произошла ошибка"
+                    )
+                    console.error(error)
+                }
                 message.delete()
                 break
 
             case "send":
-                if (args[0] === undefined) return message.channel.send("**Ошибка!** Сообщение не может быть пустым!")
-
+                if (args[0] === undefined)
+                    return message.channel.send(
+                        "**Ошибка!** Сообщение не может быть пустым!"
+                    )
                 message.channel.send(message.content.match(/send (.+)/s)[1])
                 message.delete()
                 break
 
             case "edit":
-                if (args[0] === undefined) return message.channel.send("**Ошибка!** Не указан `id` сообщения!")
-                if (args[1] === undefined) return message.channel.send("**Ошибка!** Не указан текст сообщения!")
-
-                findMessage(message.channel as TextChannel, args[0])
-                    .then((msg) => msg.edit(message.content.match(/edit ([\d]+) (.+)/s)[2]))
-                    .catch((e) => {
-                        if (e.code === 50005)
-                            message.channel.send("**Ошибка!** Нельзя редактировать сообщения других пользоветелей!")
-                        else {
-                            message.channel.send("При выполнении команды произошла ошибка")
-                            console.error(e)
-                        }
-                    })
+                if (args[0] === undefined)
+                    return message.channel.send(
+                        "**Ошибка!** Не указан `id` сообщения!"
+                    )
+                if (args[1] === undefined)
+                    return message.channel.send(
+                        "**Ошибка!** Не указан текст сообщения!"
+                    )
+                try {
+                    const msg = await findMessage(
+                        message.channel as TextChannel,
+                        args[0]
+                    )
+                    msg.edit(message.content.match(/edit ([\d]+) (.+)/s)[2])
+                } catch (error) {
+                    if (error.code === 50005)
+                        return message.channel.send(
+                            "**Ошибка!** Нельзя редактировать сообщения других пользоветелей!"
+                        )
+                    message.channel.send(
+                        "При выполнении команды произошла ошибка"
+                    )
+                    console.error(error)
+                }
                 message.delete()
                 break
 
             default:
-                message.channel.send(`**Ошибка!** Подкоманда \`${method}\` не найдена!`)
+                message.channel.send(
+                    `**Ошибка!** Подкоманда \`${method}\` не найдена!`
+                )
                 message.delete()
                 break
         }

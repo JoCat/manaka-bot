@@ -11,10 +11,14 @@ export class PlayCommand implements Command {
     aliases = ["p"]
 
     async run(message: Message, [link]: string[]): Promise<any> {
-        if (link === undefined) return message.channel.send("Вы не указали ссылку!")
-        if (!message.member.voice.channel) return message.channel.send("Вы не в голосовом канале!")
+        if (link === undefined)
+            return message.channel.send("Вы не указали ссылку!")
+        if (!message.member.voice.channel)
+            return message.channel.send("Вы не в голосовом канале!")
         try {
-            await Bot.music.getPlaylist(message.guild.id).addTrack(link, message)
+            await Bot.music
+                .getPlaylist(message.guild.id)
+                .addTrack(link, message)
         } catch (error) {
             return message.channel.send(error.message)
         }

@@ -11,11 +11,17 @@ export class PlaylistCommand implements Command {
     aliases = ["pl", "plist"]
 
     async run(message: Message): Promise<any> {
-        if (!message.member.voice.channel) return message.channel.send("Вы не в голосовом канале!")
-        if (!Bot.music.hasPlaylist(message.guild.id)) return message.channel.send("Плейлист пуст!")
+        if (!message.member.voice.channel)
+            return message.channel.send("Вы не в голосовом канале!")
+        if (!Bot.music.hasPlaylist(message.guild.id))
+            return message.channel.send("Плейлист пуст!")
 
-        const serverPlaylist = Bot.music.getPlaylist(message.guild.id).getSongs()
-        const playlist = serverPlaylist.map((song, i) => `**${i + 1}. [${song.title}](${song.url})**`)
+        const serverPlaylist = Bot.music
+            .getPlaylist(message.guild.id)
+            .getSongs()
+        const playlist = serverPlaylist.map(
+            (song, i) => `**${i + 1}. [${song.title}](${song.url})**`
+        )
 
         message.channel.send(
             new MessageEmbed()

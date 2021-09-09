@@ -1,12 +1,14 @@
 import fs from "fs"
-import path from "path"
+import { join } from "path"
 
 import dotenv from "dotenv"
+
+import FileHelper from "./helpers/FileHelper"
 
 dotenv.config()
 
 export default class ConfigManager {
-    private configFile = path.resolve(__dirname, "../../runtime/botConfig.json")
+    private configFile = join(FileHelper.runtimeDir, "botConfig.json")
     private config: BotConfig
     botToken: string = process.env.BOT_TOKEN
 
@@ -21,6 +23,13 @@ export default class ConfigManager {
         }
     }
 
+    public getConfig(): BotConfig {
+        return this.config
+    }
+
+    /**
+     * @deprecated
+     */
     getProperty(property: string): any {
         const path = property.split(".")
         let prop: BotConfig = this.config
@@ -31,21 +40,24 @@ export default class ConfigManager {
     }
 
     private getDefaults(): BotConfig {
-        const config = new BotConfig()
-        config.prefix = "m"
-        config.color = "#00aaff"
-        return config
+        return {
+            prefix: "m",
+            color: "#00aaff",
+        }
     }
 
     private load(): void {
-        const config = fs.readFileSync(this.configFile)
         try {
-            this.config = JSON.parse(config.toString())
+            this.config = JSON.parse(
+                fs.readFileSync(this.configFile).toString()
+            )
         } catch (e) {
             if (e instanceof SyntaxError) {
-                console.error("Json syntax broken. Try fix or delete botConfig.json")
-                console.error(e)
+                console.error(
+                    "Json syntax broken. Try fix or delete botConfig.json"
+                )
             }
+            console.error(e)
         }
     }
 
@@ -54,7 +66,7 @@ export default class ConfigManager {
     }
 }
 
-export class BotConfig {
+export interface BotConfig {
     prefix: string
     color: string
 }

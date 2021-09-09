@@ -1,4 +1,4 @@
-import { TextChannel } from "discord.js"
+import { Message, TextChannel } from "discord.js"
 
 // export function checkPermission (permission, member) {
 //     if (permission === 'admin') {
@@ -12,16 +12,25 @@ import { TextChannel } from "discord.js"
 //     return user_tag.replace(/[<>@!]/g,'');
 // }
 
-export async function findMessage(textChannel: TextChannel, ID: string) {
+export async function findMessage(
+    textChannel: TextChannel,
+    ID: string
+): Promise<Message> {
     try {
         return await textChannel.messages.fetch(ID, true, true)
-    } catch {}
+    } catch {
+        /* ignore */
+    }
 
-    let channels = textChannel.guild.channels.cache.filter((c) => c.type == "text").array() as TextChannel[]
-    for (let current of channels) {
+    const channels = textChannel.guild.channels.cache
+        .filter((c) => c.type === "text")
+        .array() as TextChannel[]
+    for (const channel of channels) {
         try {
-            let target = await current.messages.fetch(ID, true, true)
+            const target = await channel.messages.fetch(ID, true, true)
             if (target) return target
-        } catch {}
+        } catch {
+            /* ignore */
+        }
     }
 }

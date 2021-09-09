@@ -1,11 +1,13 @@
 import { EventEmitter } from "events"
 
-import { Message, MessageEmbed, VoiceConnection } from "discord.js"
+import { Message, MessageEmbed, TextChannel, VoiceConnection } from "discord.js"
 import ytdl, { getInfo } from "ytdl-core-discord"
 
 import Bot from "../../index"
 
-type ReturnPromiseType<T extends (...args: any) => Promise<any>> = T extends (...args: any) => Promise<infer R>
+type ReturnPromiseType<T extends (...args: any) => Promise<any>> = T extends (
+    ...args: any
+) => Promise<infer R>
     ? R
     : any
 
@@ -19,37 +21,36 @@ class Playlist extends EventEmitter {
     }
 
     stop(): void {
-        if (this.songs.length === 0) throw new Error("Музыка не играет, глупый! :cry:")
+        // TODO Вынести в команду
+        if (this.songs.length === 0)
+            throw new Error("Музыка не играет, глупый! :cry:")
         this.songs = []
-        this.connection.dispatcher.end()
+        this.connection.dispatcher.end() // destroy()?
     }
 
     skipTrack(): void {
-        if (this.songs.length === 0) throw new Error("Список пуст, пропускать нечего! :cry:")
-        this.connection.dispatcher.end()
+        // TODO Вынести в команду
+        if (this.songs.length === 0)
+            throw new Error("Список пуст, пропускать нечего! :cry:")
+        this.connection.dispatcher.end() // destroy()?
     }
 
     async addTrack(link: string, message: Message): Promise<any> {
         const song = await this.getSongData(link)
         this.songs.push(song)
-        if (this.connection) return message.channel.send(`${song.title} добавлена в очередь!`)
+        if (this.connection)
+            return message.channel.send(`${song.title} добавлена в очередь!`)
 
         try {
             this.connection = await message.member.voice.channel.join()
-            message.channel.send(
-                new MessageEmbed()
-                    .setColor(Bot.config.getProperty("color"))
-                    .setTitle("Сейчас играет:")
-                    .setDescription(`:musical_note: ${song.title}`)
-            )
-            await this.playNext()
+            await this.playNext(message.channel as TextChannel)
         } catch (err) {
             console.error(err)
             this.emit("empty")
         }
     }
 
-    private async playNext(): Promise<boolean> {
+    private async playNext(channel: TextChannel): Promise<boolean> {
         const song = this.songs[0]
 
         if (!song) {
@@ -57,15 +58,19 @@ class Playlist extends EventEmitter {
             return this.emit("empty")
         }
 
-        // const dispatcher = this.connection
-        // .play(await ytdl(song.url), { type: "opus" })
+        channel.send(
+            new MessageEmbed()
+                .setColor(Bot.config.getConfig().color)
+                .setTitle("Сейчас играет:")
+                .setDescription(`:musical_note: ${song.title}`)
+        )
 
-        // https://discordjs.guide/voice/optimisation-and-troubleshooting.html#disabling-inline-volume
+        // https://v12.discordjs.guide/voice/optimisation-and-troubleshooting.html#disabling-inline-volume
         this.connection
             .play(await ytdl(song.url), { type: "opus", volume: false })
             .once("finish", () => {
                 this.songs.shift()
-                this.playNext()
+                this.playNext(channel)
             })
             .once("error", (error) => {
                 console.error(error)

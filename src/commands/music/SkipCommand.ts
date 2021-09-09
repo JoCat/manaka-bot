@@ -10,11 +10,12 @@ export class SkipCommand implements Command {
     usage = [""]
 
     run(message: Message): any {
-        if (!message.member.voice.channel) return message.channel.send("Вы не в голосовом канале!")
+        if (!message.member.voice.channel)
+            return message.channel.send("Вы не в голосовом канале!")
         try {
             Bot.music.getPlaylist(message.guild.id).skipTrack()
         } catch (error) {
-            message.channel.send(error)
+            message.channel.send(error.message)
         }
         message.delete()
     }
