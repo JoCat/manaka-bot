@@ -42,19 +42,21 @@ export class RoleReactionCommand implements Command {
                         messageID,
                         parsedEmoji
                     )
-                    if (Bot.events.events.has(token))
+                    if (Bot.events.hasEvent(token))
                         return message.channel.send(
                             "**Ошибка!** Событие на данном сообщении с таким же эмодзи уже существует!"
                         )
 
+                    const waitMsg = await message.channel.send(
+                        "Поиск сообщения..."
+                    )
                     /* Долгая хрень */
-                    message.channel.send("Поиск сообщения...")
                     const msg = await findMessage(
                         message.channel as TextChannel,
                         messageID
                     )
                     if (!msg)
-                        return message.channel.send(
+                        return waitMsg.edit(
                             "**Ошибка!** Сообщение в данном гилде не найдено!"
                         )
                     try {
@@ -64,14 +66,12 @@ export class RoleReactionCommand implements Command {
                                 : parsedEmoji.id
                         )
                     } catch {
-                        return message.channel.send(
+                        return waitMsg.edit(
                             "Ошибка при установке реакции на сообщение"
                         )
                     }
                     Bot.events.addEventListener(messageID, roleID, parsedEmoji)
-                    message.channel.send(
-                        `Уникальный токен события: \`${token}\``
-                    )
+                    waitMsg.edit(`Уникальный токен события: \`${token}\``)
                 }
                 break
 
@@ -88,7 +88,7 @@ export class RoleReactionCommand implements Command {
             case "list":
                 {
                     const list = []
-                    Bot.events.events.forEach((event, token) => {
+                    Bot.events.getEvents().forEach((event, token) => {
                         const emoji =
                             event.emoji.id == null
                                 ? event.emoji.name

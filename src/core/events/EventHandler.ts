@@ -1,22 +1,20 @@
-import { Emoji } from "discord.js"
-
 import Bot from "../../index"
+import { DiscordEmoji, RawDiscordReactionEvent } from "./types"
 
 export default class EventHandler {
     messageID: string
     roleID: string
-    emoji: Emoji
+    emoji: DiscordEmoji
     handler: (data: any) => void
 
-    constructor(messageID: string, roleID: string, emoji: Emoji) {
+    constructor(messageID: string, roleID: string, emoji: DiscordEmoji) {
         this.messageID = messageID
         this.roleID = roleID
         this.emoji = emoji
         this.handler = this.eventHandler
     }
 
-    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-    async eventHandler(data: any /* Raw Discord event */): Promise<void> {
+    async eventHandler(data: RawDiscordReactionEvent): Promise<void> {
         let reactMember = await (
             await Bot.client.guilds.fetch(data.d.guild_id)
         ).members.fetch(data.d.user_id)

@@ -1,16 +1,14 @@
 import crypto from "crypto"
 
-import { Emoji } from "discord.js"
-
 import Bot from "../../index"
 import EventHandler from "./EventHandler"
+import { DiscordEmoji, RawDiscordReactionEvent } from "./types"
 
 export default class EventsManager {
-    // TODO private
-    events: Map<string, EventHandler> = new Map()
+    private events: Map<string, EventHandler> = new Map()
 
     // TODO вынести в конструктор?
-    init(): void {
+    public init(): void {
         Bot.jsonDB.getAllData("events").forEach((event: EventHandler) => {
             const token = this.generateToken(event.messageID, event.emoji)
             this.events.set(
@@ -19,7 +17,7 @@ export default class EventsManager {
             )
         })
 
-        Bot.client.on("raw", (data: RawDiscordEvent) => {
+        Bot.client.on("raw", (data: RawDiscordReactionEvent) => {
             if (
                 !["MESSAGE_REACTION_REMOVE", "MESSAGE_REACTION_ADD"].includes(
                     data.t
@@ -34,34 +32,35 @@ export default class EventsManager {
         })
     }
 
-    /* TODO Отрефакторить команды, убрать any */
-    addEventListener(
+    public addEventListener(
         messageID: string,
         roleID: string,
-        emoji: Emoji | any
+        emoji: DiscordEmoji
     ): void {
         const handler = new EventHandler(messageID, roleID, emoji)
         Bot.jsonDB.addData("events", handler)
         this.events.set(this.generateToken(messageID, emoji), handler)
     }
 
-    removeEventListener(token: string): boolean {
+    public removeEventListener(token: string): boolean {
         if (!this.events.has(token)) return false
         Bot.jsonDB.deleteData("events", "token", token)
         this.events.delete(token)
         return true
     }
 
-    /* TODO Отрефакторить команды, убрать any */
-    generateToken(messageID: string, emoji: Emoji | any): string {
+    public generateToken(messageID: string, emoji: DiscordEmoji): string {
         return crypto
             .createHash("md5")
             .update(messageID + emoji.id + emoji.name)
             .digest("hex")
     }
-}
 
-interface RawDiscordEvent {
-    t: string // Event type
-    d: any // Event data
+    public getEvents(): Map<string, EventHandler> {
+        return this.events
+    }
+
+    public hasEvent(token: string): boolean {
+        return this.events.has(token)
+    }
 }
