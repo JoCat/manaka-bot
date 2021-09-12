@@ -43,6 +43,9 @@ class Playlist extends EventEmitter {
 
         try {
             this.connection = await message.member.voice.channel.join()
+            this.connection.on("disconnect", () => {
+                this.emit("empty")
+            })
             await this.playNext(message.channel as TextChannel)
         } catch (err) {
             console.error(err)
