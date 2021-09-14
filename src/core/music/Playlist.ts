@@ -1,4 +1,5 @@
 import { EventEmitter } from "events"
+import { basename } from "path"
 
 import { Message, MessageEmbed, TextChannel, VoiceConnection } from "discord.js"
 import ytdl, { getInfo } from "ytdl-core-discord"
@@ -39,7 +40,12 @@ class Playlist extends EventEmitter {
         const song = await this.getSongData(link)
         this.songs.push(song)
         if (this.connection)
-            return message.channel.send(`${song.title} добавлена в очередь!`)
+            return message.channel.send(
+                new MessageEmbed()
+                    .setColor(Bot.config.getConfig().color)
+                    .setTitle("Трек добавлен в очередь")
+                    .setDescription(`[${song.title}](${song.url})`)
+            )
 
         try {
             this.connection = await message.member.voice.channel.join()
@@ -64,13 +70,12 @@ class Playlist extends EventEmitter {
         channel.send(
             new MessageEmbed()
                 .setColor(Bot.config.getConfig().color)
-                .setTitle("Сейчас играет:")
-                .setDescription(`:musical_note: ${song.title}`)
+                .setTitle("Сейчас играет")
+                .setDescription(`[${song.title}](${song.url})`)
         )
 
         // https://v12.discordjs.guide/voice/optimisation-and-troubleshooting.html#disabling-inline-volume
-        this.connection
-            .play(await ytdl(song.url), { type: "opus", volume: false })
+        ;(await this.play(song))
             .once("finish", () => {
                 this.songs.shift()
                 this.playNext(channel)
@@ -81,7 +86,27 @@ class Playlist extends EventEmitter {
         // dispatcher.setVolumeLogarithmic(this.volume / 100)
     }
 
+    private async play(song: Track) {
+        switch (song.type) {
+            case "youtube":
+                return this.connection.play(await ytdl(song.url), {
+                    type: "opus",
+                    volume: false,
+                })
+            case "raw":
+                return this.connection.play(song.url, { volume: false })
+        }
+    }
+
     private async getSongData(link: string): Promise<Track> {
+        if (link.includes("youtu")) {
+            return await this.getYoutubeSongData(link)
+        } else {
+            return this.getRawLinkSongData(link)
+        }
+    }
+
+    private async getYoutubeSongData(link: string): Promise<Track> {
         let songInfo: ReturnPromiseType<typeof getInfo>
         try {
             songInfo = await getInfo(link)
@@ -90,8 +115,17 @@ class Playlist extends EventEmitter {
         }
 
         return {
+            type: "youtube",
             title: songInfo.videoDetails.title,
             url: songInfo.videoDetails.video_url,
+        }
+    }
+
+    private getRawLinkSongData(link: string): Track {
+        return {
+            type: "raw",
+            title: basename(link), // мб чё придумать (парсить мету ID3)
+            url: link,
         }
     }
 }
@@ -105,6 +139,7 @@ declare interface Playlist {
 }
 
 interface Track {
+    type: "youtube" | "raw"
     title: string
     url: string
 }
