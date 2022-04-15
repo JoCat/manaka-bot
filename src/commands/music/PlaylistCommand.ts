@@ -25,7 +25,7 @@ export class PlaylistCommand implements Command {
 
         message.channel.send(
             new MessageEmbed()
-                .setColor(Bot.config.getProperty("color"))
+                .setColor(Bot.config.getConfig().color)
                 .setDescription(playlist.join("\n"))
                 .setTitle("Плейлист")
         )

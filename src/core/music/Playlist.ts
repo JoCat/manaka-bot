@@ -2,41 +2,28 @@ import { EventEmitter } from "events"
 import { basename } from "path"
 
 import { Message, MessageEmbed, TextChannel, VoiceConnection } from "discord.js"
-import ytdl, { getInfo } from "ytdl-core-discord"
+import { stream, validate, video_basic_info } from "play-dl"
 
 import Bot from "../../index"
-
-type ReturnPromiseType<T extends (...args: any) => Promise<any>> = T extends (
-    ...args: any
-) => Promise<infer R>
-    ? R
-    : any
 
 class Playlist extends EventEmitter {
     private connection: VoiceConnection
     private songs: Track[] = []
-    // private volume = 100
 
-    getSongs(): Track[] {
+    public getSongs(): Track[] {
         return this.songs
     }
 
-    stop(): void {
-        // TODO Вынести в команду
-        if (this.songs.length === 0)
-            throw new Error("Музыка не играет, глупый! :cry:")
+    public stop(): void {
         this.songs = []
         this.connection.dispatcher.end() // destroy()?
     }
 
-    skipTrack(): void {
-        // TODO Вынести в команду
-        if (this.songs.length === 0)
-            throw new Error("Список пуст, пропускать нечего! :cry:")
+    public skipTrack(): void {
         this.connection.dispatcher.end() // destroy()?
     }
 
-    async addTrack(link: string, message: Message): Promise<any> {
+    public async addTrack(link: string, message: Message): Promise<any> {
         const song = await this.getSongData(link)
         this.songs.push(song)
         if (this.connection)
@@ -49,23 +36,19 @@ class Playlist extends EventEmitter {
 
         try {
             this.connection = await message.member.voice.channel.join()
-            this.connection.on("disconnect", () => {
+            this.connection.once("disconnect", () => {
                 this.emit("empty")
             })
-            await this.playNext(message.channel as TextChannel)
+            await this.playNext(<TextChannel>message.channel)
         } catch (err) {
             console.error(err)
             this.emit("empty")
         }
     }
 
-    private async playNext(channel: TextChannel): Promise<boolean> {
+    private async playNext(channel: TextChannel): Promise<void> {
         const song = this.songs[0]
-
-        if (!song) {
-            this.connection.disconnect()
-            return this.emit("empty")
-        }
+        if (!song) return this.connection.disconnect()
 
         channel.send(
             new MessageEmbed()
@@ -74,8 +57,8 @@ class Playlist extends EventEmitter {
                 .setDescription(`[${song.title}](${song.url})`)
         )
 
-        // https://v12.discordjs.guide/voice/optimisation-and-troubleshooting.html#disabling-inline-volume
-        ;(await this.play(song))
+        this.connection
+            .play(await this.getInput(song), { volume: false })
             .once("finish", () => {
                 this.songs.shift()
                 this.playNext(channel)
@@ -83,41 +66,39 @@ class Playlist extends EventEmitter {
             .once("error", (error) => {
                 console.error(error)
             })
-        // dispatcher.setVolumeLogarithmic(this.volume / 100)
     }
 
-    private async play(song: Track) {
+    private async getInput(song: Track) {
         switch (song.type) {
             case "youtube":
-                return this.connection.play(await ytdl(song.url), {
-                    type: "opus",
-                    volume: false,
-                })
+                return (
+                    await stream(song.url, {
+                        discordPlayerCompatibility: true,
+                    })
+                ).stream
+
             case "raw":
-                return this.connection.play(song.url, { volume: false })
+                return song.url
         }
     }
 
     private async getSongData(link: string): Promise<Track> {
-        if (link.includes("youtu")) {
-            return await this.getYoutubeSongData(link)
-        } else {
-            return this.getRawLinkSongData(link)
+        const linkType = await validate(link)
+        switch (linkType) {
+            case "yt_video":
+                return await this.getYoutubeSongData(link)
+            default:
+                return this.getRawLinkSongData(link)
         }
     }
 
     private async getYoutubeSongData(link: string): Promise<Track> {
-        let songInfo: ReturnPromiseType<typeof getInfo>
-        try {
-            songInfo = await getInfo(link)
-        } catch (error) {
-            throw new Error("Некорректная ссылка!")
-        }
+        const songInfo = await video_basic_info(link)
 
         return {
             type: "youtube",
-            title: songInfo.videoDetails.title,
-            url: songInfo.videoDetails.video_url,
+            title: songInfo.video_details.title,
+            url: songInfo.video_details.url,
         }
     }
 

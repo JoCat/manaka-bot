@@ -12,11 +12,11 @@ export class StopCommand implements Command {
     run(message: Message): any {
         if (!message.member.voice.channel)
             return message.channel.send("Вы не в голосовом канале!")
-        try {
-            Bot.music.getPlaylist(message.guild.id).stop()
-        } catch (error) {
-            message.channel.send(error.message)
-        }
-        message.delete()
+
+        const playlist = Bot.music.getPlaylist(message.guild.id)
+        if (playlist.getSongs().length === 0)
+            return message.channel.send("Музыка не играет, глупый! :cry:")
+
+        playlist.stop()
     }
 }
