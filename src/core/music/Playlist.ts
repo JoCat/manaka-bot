@@ -2,7 +2,7 @@ import { EventEmitter } from "events"
 import { basename } from "path"
 
 import { Message, MessageEmbed, TextChannel, VoiceConnection } from "discord.js"
-import { stream, validate, video_basic_info } from "play-dl"
+import { playlist_info, stream, validate, video_basic_info } from "play-dl"
 
 import Bot from "../../index"
 
@@ -16,23 +16,38 @@ class Playlist extends EventEmitter {
 
     public stop(): void {
         this.songs = []
-        this.connection.dispatcher.end() // destroy()?
+        this.connection.dispatcher.end()
     }
 
     public skipTrack(): void {
-        this.connection.dispatcher.end() // destroy()?
+        this.connection.dispatcher.end()
     }
 
-    public async addTrack(link: string, message: Message): Promise<any> {
-        const song = await this.getSongData(link)
-        this.songs.push(song)
-        if (this.connection)
+    public async addTrack(
+        link: string,
+        message: Message,
+        next = false
+    ): Promise<any> {
+        const songs = await this.getSongsData(link)
+
+        if (next) this.songs.splice(1, 0, ...songs)
+        else this.songs.push(...songs)
+
+        if (this.connection) {
+            if (songs.length > 1) {
+                return message.channel.send(
+                    new MessageEmbed()
+                        .setColor(Bot.config.getConfig().color)
+                        .setTitle("Плейлист добавлен в очередь")
+                )
+            }
             return message.channel.send(
                 new MessageEmbed()
                     .setColor(Bot.config.getConfig().color)
                     .setTitle("Трек добавлен в очередь")
-                    .setDescription(`[${song.title}](${song.url})`)
+                    .setDescription(`[${songs[0].title}](${songs[0].url})`)
             )
+        }
 
         try {
             this.connection = await message.member.voice.channel.join()
@@ -82,14 +97,27 @@ class Playlist extends EventEmitter {
         }
     }
 
-    private async getSongData(link: string): Promise<Track> {
+    private async getSongsData(link: string): Promise<Track[]> {
         const linkType = await validate(link)
         switch (linkType) {
             case "yt_video":
-                return await this.getYoutubeSongData(link)
+                return [await this.getYoutubeSongData(link)]
+            case "yt_playlist":
+                return this.getYoutubePlaylistData(link)
             default:
-                return this.getRawLinkSongData(link)
+                return [this.getRawLinkSongData(link)]
         }
+    }
+
+    private async getYoutubePlaylistData(link: string): Promise<Track[]> {
+        const playlist = await playlist_info(link, { incomplete: true })
+        const videos = await playlist.all_videos()
+
+        return videos.map((video) => ({
+            type: "youtube",
+            title: video.title,
+            url: video.url,
+        }))
     }
 
     private async getYoutubeSongData(link: string): Promise<Track> {

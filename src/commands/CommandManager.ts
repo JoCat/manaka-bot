@@ -7,6 +7,7 @@ import { Command, CommandCategory } from "./Command"
 import { HelpCommand } from "./general/HelpCommand"
 import { PlayCommand } from "./music/PlayCommand"
 import { PlaylistCommand } from "./music/PlaylistCommand"
+import { PlayNextCommand } from "./music/PlayNextCommand"
 import { SkipCommand } from "./music/SkipCommand"
 import { StopCommand } from "./music/StopCommand"
 
@@ -26,6 +27,7 @@ export default class CommandManager {
         this.registerCommand(new SkipCommand())
         this.registerCommand(new StopCommand())
         this.registerCommand(new PlaylistCommand())
+        this.registerCommand(new PlayNextCommand())
     }
 
     registerCommand(command: Command): void {
