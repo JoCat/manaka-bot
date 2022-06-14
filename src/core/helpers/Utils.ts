@@ -1,4 +1,4 @@
-import { Message, TextChannel } from "discord.js"
+import { Message, NewsChannel, TextChannel } from "discord.js"
 
 // export function checkPermission (permission, member) {
 //     if (permission === 'admin') {
@@ -23,8 +23,8 @@ export async function findMessage(
     }
 
     const channels = textChannel.guild.channels.cache
-        .filter((c) => c.type === "text")
-        .array() as TextChannel[]
+        .filter(({ type }) => ["text", "news"].includes(type))
+        .array() as (TextChannel | NewsChannel)[]
     for (const channel of channels) {
         try {
             const target = await channel.messages.fetch(ID, true, true)
