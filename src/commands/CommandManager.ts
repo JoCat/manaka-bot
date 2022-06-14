@@ -64,7 +64,7 @@ export default class CommandManager {
         const prefix = Bot.config.getConfig().prefix
 
         if (message.author.bot) return
-        if (message.channel.type !== "text") return
+        if (!["text", "news"].includes(message.channel.type)) return
         if (!message.content.startsWith(`${prefix} `)) return
 
         const args = message.content.slice(prefix.length).trim().split(/ +/)
