@@ -1,10 +1,9 @@
 import { defineConfig } from "tsup"
 
 export default defineConfig({
-    entry: ["src"],
+    entry: ["src/index.ts"],
     target: "node16",
-    splitting: false,
     sourcemap: true,
-    bundle: false,
+    bundle: true,
     clean: true,
 })
