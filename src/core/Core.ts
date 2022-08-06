@@ -15,8 +15,10 @@ export default class Core {
     music = new MusicManager()
 
     constructor() {
-        this.client.on("message", (m) => this.commands.executeCommand(m))
-        this.client.on("voiceStateUpdate", (_, after) =>
+        this.client.on("message", (message) =>
+            this.commands.executeCommand(message)
+        )
+        this.client.on("voiceStateUpdate", (_, after: VoiceState) =>
             this.voiceStateUpdate(after)
         )
         this.client.on("ready", () => {
@@ -30,7 +32,7 @@ export default class Core {
         this.client.login(this.config.botToken)
     }
 
-    async voiceStateUpdate(after: VoiceState): Promise<void> {
+    private async voiceStateUpdate(after: VoiceState): Promise<void> {
         const voiceChannels = ["741028100317642802"] // TODO вынести в бд + команда
 
         if (voiceChannels.includes(after.channelID)) {
