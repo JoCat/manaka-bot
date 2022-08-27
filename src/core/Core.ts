@@ -8,28 +8,30 @@ import MusicManager from "./music/MusicManager"
 
 export default class Core {
     client = new Client()
-    config = new ConfigManager()
-    commands = new CommandManager()
-    jsonDB = new JsonDBManager()
-    events = new EventsManager()
-    music = new MusicManager()
+    configManager = new ConfigManager()
+    commandsManager = new CommandManager(this)
+    jsonDBManager = new JsonDBManager()
+    eventsManager = new EventsManager(this)
+    musicManager = new MusicManager(this)
 
     constructor() {
         this.client.on("message", (message) =>
-            this.commands.executeCommand(message)
+            this.commandsManager.executeCommand(message)
         )
         this.client.on("voiceStateUpdate", (_, after: VoiceState) =>
             this.voiceStateUpdate(after)
         )
         this.client.on("ready", () => {
-            this.events.init() // пофиксить
             console.log("Bot started")
-            this.client.user.setActivity(
-                `${this.config.getConfig().prefix} help`,
-                { type: "LISTENING" }
-            )
+
+            if (!this.configManager.dev) {
+                this.client.user.setActivity(
+                    `${this.configManager.getConfig().prefix} help`,
+                    { type: "WATCHING" }
+                )
+            }
         })
-        this.client.login(this.config.botToken)
+        this.client.login(this.configManager.botToken)
     }
 
     private async voiceStateUpdate(after: VoiceState): Promise<void> {
@@ -46,11 +48,11 @@ export default class Core {
                     ).parent,
                 })
                 .then((channel) => {
-                    channel.createOverwrite(after.id, {
-                        VIEW_CHANNEL: true,
-                        MANAGE_CHANNELS: true,
-                        CONNECT: true,
-                    })
+                    // channel.permissionOverwrites.edit(after.id, {
+                    //     VIEW_CHANNEL: true,
+                    //     MANAGE_CHANNELS: true,
+                    //     CONNECT: true,
+                    // })
                     after.setChannel(channel)
                 })
         }

@@ -1,29 +1,38 @@
 import crypto from "crypto"
 
-import Bot from "../../index"
+import Core from "core/Core"
+
 import EventHandler from "./EventHandler"
 import { DiscordEmoji, RawDiscordReactionEvent } from "./types"
 
 export default class EventsManager {
     private events: Map<string, EventHandler> = new Map()
 
-    // TODO вынести в конструктор?
-    public init(): void {
-        Bot.jsonDB.getAllData("events").forEach((event: EventHandler) => {
-            const token = this.generateToken(event.messageID, event.emoji)
-            this.events.set(
-                token,
-                new EventHandler(event.messageID, event.roleID, event.emoji)
-            )
-        })
+    constructor(private core: Core) {
+        core.jsonDBManager
+            .getAllData("events")
+            .forEach((event: EventHandler) => {
+                const token = this.generateToken(event.messageID, event.emoji)
+                this.events.set(
+                    token,
+                    new EventHandler(
+                        core.client.guilds,
+                        event.messageID,
+                        event.roleID,
+                        event.emoji
+                    )
+                )
+            })
 
-        Bot.client.on("raw", (data: RawDiscordReactionEvent) => {
+        core.client.on("raw", (data: RawDiscordReactionEvent) => {
             if (
                 !["MESSAGE_REACTION_REMOVE", "MESSAGE_REACTION_ADD"].includes(
                     data.t
                 )
-            )
+            ) {
                 return
+            }
+
             const event = this.events.get(
                 this.generateToken(data.d.message_id, data.d.emoji)
             )
@@ -37,14 +46,19 @@ export default class EventsManager {
         roleID: string,
         emoji: DiscordEmoji
     ): void {
-        const handler = new EventHandler(messageID, roleID, emoji)
-        Bot.jsonDB.addData("events", handler)
+        const handler = new EventHandler(
+            this.core.client.guilds,
+            messageID,
+            roleID,
+            emoji
+        )
+        this.core.jsonDBManager.addData("events", handler)
         this.events.set(this.generateToken(messageID, emoji), handler)
     }
 
     public removeEventListener(token: string): boolean {
         if (!this.events.has(token)) return false
-        Bot.jsonDB.deleteData("events", "token", token)
+        this.core.jsonDBManager.deleteData("events", "token", token)
         this.events.delete(token)
         return true
     }

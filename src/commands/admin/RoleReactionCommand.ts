@@ -1,10 +1,9 @@
 import { Message, MessageEmbed, TextChannel, Util } from "discord.js"
 
 import { findMessage } from "../../core/helpers/Utils"
-import Bot from "../../index"
 import { Command, CommandCategory } from "../Command"
 
-export class RoleReactionCommand implements Command {
+export class RoleReactionCommand extends Command {
     name = "role-reaction"
     category = CommandCategory.ADMIN
     description = "управление выдачей ролей по реакии"
@@ -38,11 +37,11 @@ export class RoleReactionCommand implements Command {
                             "**Ошибка!** Указан некорректный Emoji!"
                         )
 
-                    const token = Bot.events.generateToken(
+                    const token = this.core.eventsManager.generateToken(
                         messageID,
                         parsedEmoji
                     )
-                    if (Bot.events.hasEvent(token))
+                    if (this.core.eventsManager.hasEvent(token))
                         return message.channel.send(
                             "**Ошибка!** Событие на данном сообщении с таким же эмодзи уже существует!"
                         )
@@ -70,7 +69,11 @@ export class RoleReactionCommand implements Command {
                             "Ошибка при установке реакции на сообщение"
                         )
                     }
-                    Bot.events.addEventListener(messageID, roleID, parsedEmoji)
+                    this.core.eventsManager.addEventListener(
+                        messageID,
+                        roleID,
+                        parsedEmoji
+                    )
                     waitMsg.edit(`Уникальный токен события: \`${token}\``)
                 }
                 break
@@ -80,7 +83,7 @@ export class RoleReactionCommand implements Command {
                     return message.channel.send(
                         "**Ошибка!** Не указан `token` события!"
                     )
-                if (Bot.events.removeEventListener(args[0]))
+                if (this.core.eventsManager.removeEventListener(args[0]))
                     message.channel.send("Событие удалёно")
                 else message.channel.send("**Ошибка!** Событие не найдено!")
                 break
@@ -88,19 +91,23 @@ export class RoleReactionCommand implements Command {
             case "list":
                 {
                     const list = []
-                    Bot.events.getEvents().forEach((event, token) => {
-                        const emoji =
-                            event.emoji.id == null
-                                ? event.emoji.name
-                                : Bot.client.emojis.cache.get(event.emoji.id)
-                        list.push(
-                            `Событие: \`${token}\`, Сообщение: \`${event.messageID}\`, Роль: <@&${event.roleID}>, Эмодзи: ${emoji}`
-                        )
-                    })
+                    this.core.eventsManager
+                        .getEvents()
+                        .forEach((event, token) => {
+                            const emoji =
+                                event.emoji.id == null
+                                    ? event.emoji.name
+                                    : this.core.client.emojis.cache.get(
+                                          event.emoji.id
+                                      )
+                            list.push(
+                                `Событие: \`${token}\`, Сообщение: \`${event.messageID}\`, Роль: <@&${event.roleID}>, Эмодзи: ${emoji}`
+                            )
+                        })
                     if (list.length === 0) list.push("*Список пуст*")
                     message.channel.send(
                         new MessageEmbed()
-                            .setColor(Bot.config.getConfig().color)
+                            .setColor(this.core.configManager.getConfig().color)
                             .setDescription(list.join("\n"))
                             .setTitle("Список событий")
                             .setTimestamp()

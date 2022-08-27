@@ -1,10 +1,9 @@
 import { Message, MessageEmbed, TextChannel } from "discord.js"
 
 import { findMessage } from "../../core/helpers/Utils"
-import Bot from "../../index"
 import { Command, CommandCategory } from "../Command"
 
-export class MessageCommand implements Command {
+export class MessageCommand extends Command {
     name = "message"
     category = CommandCategory.ADMIN
     description = "управление сообщениями"
@@ -33,7 +32,7 @@ export class MessageCommand implements Command {
                     // TODO придумать что-то с Embed сообщениями
                     message.channel.send(
                         new MessageEmbed()
-                            .setColor(Bot.config.getConfig().color)
+                            .setColor(this.core.configManager.getConfig().color)
                             .setDescription(msg.content)
                             .setAuthor(
                                 msg.author.username,

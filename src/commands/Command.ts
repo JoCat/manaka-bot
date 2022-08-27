@@ -1,6 +1,7 @@
+import Core from "core/Core"
 import { Message } from "discord.js"
 
-export interface Command {
+export abstract class Command {
     readonly name: string
     readonly category: CommandCategory
     readonly description: string
@@ -8,7 +9,9 @@ export interface Command {
     readonly aliases?: string[]
     readonly cooldown?: number
 
-    run(message: Message, args: string[]): any
+    constructor(protected core: Core) {}
+
+    abstract run(message: Message, args: string[]): any
 }
 
 export enum CommandCategory {

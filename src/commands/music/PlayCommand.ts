@@ -1,9 +1,8 @@
 import { Message } from "discord.js"
 
-import Bot from "../../index"
 import { Command, CommandCategory } from "../Command"
 
-export class PlayCommand implements Command {
+export class PlayCommand extends Command {
     name = "play"
     category = CommandCategory.MUSIC
     description = "воспроизводит музыку или добавляет её в очередь"
@@ -16,7 +15,7 @@ export class PlayCommand implements Command {
         if (!message.member.voice.channel)
             return message.channel.send("Вы не в голосовом канале!")
         try {
-            await Bot.music
+            await this.core.musicManager
                 .getPlaylist(message.guild.id)
                 .addTrack(link, message)
         } catch (error) {

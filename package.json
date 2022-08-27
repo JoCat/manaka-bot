@@ -6,7 +6,7 @@
     "scripts": {
         "dev": "npm run build && npm run start:dev",
         "build": "npm run clean && tsup",
-        "start:dev": "nodemon .",
+        "start:dev": "node .",
         "start": "pm2 start dist/index.js --name=bot -o logs/bot.log -e logs/error.log --log-date-format \"DD-MM-YYYY HH:mm:ss\"",
         "deploy": "npm ci && npm run build && pm2 delete -s bot || ':' && npm run start",
         "clean": "rimraf dist",
@@ -30,10 +30,16 @@
     "homepage": "https://gitlab.com/JoCat/manaka-bot#readme",
     "dependencies": {
         "@discordjs/opus": "^0.8.0",
+        "@discordjs/voice": "^0.11.0",
+        "bufferutil": "^4.0.6",
         "discord.js": "^12.5.3",
         "dotenv": "^16.0.0",
+        "erlpack": "github:discord/erlpack",
         "ffmpeg-static": "^5.0.0",
-        "play-dl": "^1.9.4"
+        "libsodium-wrappers": "^0.7.10",
+        "play-dl": "^1.9.4",
+        "utf-8-validate": "^5.0.9",
+        "zlib-sync": "^0.1.7"
     },
     "devDependencies": {
         "@types/node": "^16.11.26",
@@ -45,6 +51,7 @@
         "prettier": "^2.4.0",
         "prettier-plugin-import-sort": "0.0.7",
         "rimraf": "^3.0.2",
+        "source-map-support": "^0.5.21",
         "tsup": "^6.2.1",
         "typescript": "^4.4.3"
     },

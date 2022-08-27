@@ -1,14 +1,17 @@
 import { EventEmitter } from "events"
 import { basename } from "path"
 
+import Core from "core/Core"
 import { Message, MessageEmbed, TextChannel, VoiceConnection } from "discord.js"
 import { playlist_info, stream, validate, video_basic_info } from "play-dl"
-
-import Bot from "../../index"
 
 class Playlist extends EventEmitter {
     private connection: VoiceConnection
     private songs: Track[] = []
+
+    constructor(private core: Core) {
+        super()
+    }
 
     public getSongs(): Track[] {
         return this.songs
@@ -37,13 +40,13 @@ class Playlist extends EventEmitter {
             if (songs.length > 1) {
                 return message.channel.send(
                     new MessageEmbed()
-                        .setColor(Bot.config.getConfig().color)
+                        .setColor(this.core.configManager.getConfig().color)
                         .setTitle("Плейлист добавлен в очередь")
                 )
             }
             return message.channel.send(
                 new MessageEmbed()
-                    .setColor(Bot.config.getConfig().color)
+                    .setColor(this.core.configManager.getConfig().color)
                     .setTitle("Трек добавлен в очередь")
                     .setDescription(`[${songs[0].title}](${songs[0].url})`)
             )
@@ -67,7 +70,7 @@ class Playlist extends EventEmitter {
 
         channel.send(
             new MessageEmbed()
-                .setColor(Bot.config.getConfig().color)
+                .setColor(this.core.configManager.getConfig().color)
                 .setTitle("Сейчас играет")
                 .setDescription(`[${song.title}](${song.url})`)
         )

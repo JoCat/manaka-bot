@@ -1,6 +1,10 @@
+import Core from "core/Core"
+
 import Playlist from "./Playlist"
 
 export default class MusicManager {
+    constructor(private core: Core) {}
+
     private playlists: Map<string, Playlist> = new Map()
 
     public getPlaylist(id: string): Playlist {
@@ -13,7 +17,7 @@ export default class MusicManager {
     }
 
     private createPlaylist(id: string) {
-        const playlist = new Playlist()
+        const playlist = new Playlist(this.core)
         playlist.once("empty", () => {
             this.playlists.delete(id)
         })

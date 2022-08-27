@@ -1,9 +1,8 @@
 import { Message, MessageEmbed } from "discord.js"
 
-import Bot from "../../index"
 import { Command, CommandCategory } from "../Command"
 
-export class HelpCommand implements Command {
+export class HelpCommand extends Command {
     name = "help"
     category = CommandCategory.GENERAL
     description =
@@ -12,12 +11,12 @@ export class HelpCommand implements Command {
     aliases = ["h", "commands"]
 
     run(message: Message, args: string[]): any {
-        const prefix = Bot.config.getConfig().prefix
-        const color = Bot.config.getConfig().color
+        const { prefix, color } = this.core.configManager.getConfig()
 
         if (!args.length) {
             const list = (category: CommandCategory, categoryName: string) => {
-                const cmdList = Bot.commands.commands
+                const cmdList = this.core.commandsManager
+                    .getCommands()
                     .filter((cmd) => cmd.category === category)
                     .map(
                         (cmd) =>
@@ -51,7 +50,7 @@ export class HelpCommand implements Command {
         }
 
         const commandName = args.shift().toLowerCase()
-        const command = Bot.commands.getCommand(commandName)
+        const command = this.core.commandsManager.getCommand(commandName)
 
         if (!command)
             return message.channel.send(

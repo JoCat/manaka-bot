@@ -1,10 +1,9 @@
 import Playlist from "core/music/Playlist"
 import { Message, MessageEmbed } from "discord.js"
 
-import Bot from "../../index"
 import { Command, CommandCategory } from "../Command"
 
-export class PlaylistCommand implements Command {
+export class PlaylistCommand extends Command {
     name = "playlist"
     category = CommandCategory.MUSIC
     description = "показывает всю музыку, добавленную в очередь"
@@ -14,12 +13,20 @@ export class PlaylistCommand implements Command {
     async run(message: Message): Promise<any> {
         if (!message.member.voice.channel)
             return message.channel.send("Вы не в голосовом канале!")
-        if (!Bot.music.hasPlaylist(message.guild.id))
+        if (!this.core.musicManager.hasPlaylist(message.guild.id))
             return message.channel.send("Плейлист пуст!")
 
-        const serverPlaylist = Bot.music.getPlaylist(message.guild.id)
+        const serverPlaylist = this.core.musicManager.getPlaylist(
+            message.guild.id
+        )
         const playlist = getTracks(serverPlaylist)
-        const msg = await message.channel.send(getEmbed(playlist))
+        const msg = await message.channel.send(
+            getEmbed(
+                playlist,
+                undefined,
+                this.core.configManager.getConfig().color
+            )
+        )
 
         message.delete()
         await msg.react("⬅️")
@@ -43,7 +50,13 @@ export class PlaylistCommand implements Command {
             else return
 
             const playlist = getTracks(serverPlaylist, page)
-            msg.edit(getEmbed(playlist, page))
+            msg.edit(
+                getEmbed(
+                    playlist,
+                    page,
+                    this.core.configManager.getConfig().color
+                )
+            )
         })
     }
 }
@@ -61,10 +74,11 @@ function getTracks(serverPlaylist: Playlist, page = 0) {
 
 function getEmbed(
     { songsCount, playlist }: { songsCount: number; playlist: string[] },
-    page = 0
+    page = 0,
+    color
 ) {
     return new MessageEmbed()
-        .setColor(Bot.config.getConfig().color)
+        .setColor(color)
         .setDescription(playlist.join("\n"))
         .setTitle("Плейлист")
         .addField("Всего треков в плейлисте", songsCount, true)

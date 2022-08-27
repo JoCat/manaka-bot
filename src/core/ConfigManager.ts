@@ -10,7 +10,8 @@ dotenv.config()
 export default class ConfigManager {
     private configFile = join(FileHelper.runtimeDir, "botConfig.json")
     private config: BotConfig
-    botToken: string = process.env.BOT_TOKEN
+    public readonly botToken = process.env.BOT_TOKEN
+    public readonly dev = process.env.DEV === "true"
 
     constructor() {
         if (fs.existsSync(this.configFile)) {
@@ -58,6 +59,10 @@ export default class ConfigManager {
                 )
             }
             console.error(e)
+        }
+
+        if (this.dev) {
+            this.config.prefix = "mm"
         }
     }
 

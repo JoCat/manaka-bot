@@ -1,6 +1,6 @@
+import Core from "core/Core"
 import { Collection, Message } from "discord.js"
 
-import Bot from "../index"
 import { MessageCommand } from "./admin/MessageCommand"
 import { RoleReactionCommand } from "./admin/RoleReactionCommand"
 import { Command, CommandCategory } from "./Command"
@@ -12,22 +12,26 @@ import { SkipCommand } from "./music/SkipCommand"
 import { StopCommand } from "./music/StopCommand"
 
 export default class CommandManager {
-    commands: Collection<string, Command> = new Collection()
-    commandAliases: Map<string, string> = new Map()
+    private commands: Collection<string, Command> = new Collection()
+    private commandAliases: Map<string, string> = new Map()
 
-    constructor() {
+    constructor(private core: Core) {
         this.commandsInit()
     }
 
+    getCommands() {
+        return this.commands
+    }
+
     commandsInit(): void {
-        this.registerCommand(new HelpCommand())
-        this.registerCommand(new MessageCommand())
-        this.registerCommand(new RoleReactionCommand())
-        this.registerCommand(new PlayCommand())
-        this.registerCommand(new SkipCommand())
-        this.registerCommand(new StopCommand())
-        this.registerCommand(new PlaylistCommand())
-        this.registerCommand(new PlayNextCommand())
+        this.registerCommand(new HelpCommand(this.core))
+        this.registerCommand(new MessageCommand(this.core))
+        this.registerCommand(new RoleReactionCommand(this.core))
+        this.registerCommand(new PlayCommand(this.core))
+        this.registerCommand(new SkipCommand(this.core))
+        this.registerCommand(new StopCommand(this.core))
+        this.registerCommand(new PlaylistCommand(this.core))
+        this.registerCommand(new PlayNextCommand(this.core))
     }
 
     registerCommand(command: Command): void {
@@ -61,7 +65,7 @@ export default class CommandManager {
     }
 
     executeCommand(message: Message): any {
-        const prefix = Bot.config.getConfig().prefix
+        const prefix = this.core.configManager.getConfig().prefix
 
         if (message.author.bot) return
         if (!["text", "news"].includes(message.channel.type)) return
