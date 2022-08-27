@@ -29,18 +29,6 @@ export default class ConfigManager {
         return this.config
     }
 
-    /**
-     * @deprecated
-     */
-    getProperty(property: string): any {
-        const path = property.split(".")
-        let prop: BotConfig = this.config
-        path.forEach((el) => {
-            prop = prop[el]
-        })
-        return prop
-    }
-
     private getDefaults(): BotConfig {
         return {
             prefix: "m",
