@@ -14,20 +14,27 @@ import { Message, NewsChannel, TextChannel } from "discord.js"
 
 export async function findMessage(
     textChannel: TextChannel,
-    ID: string
+    id: string
 ): Promise<Message> {
     try {
-        return await textChannel.messages.fetch(ID, true, true)
+        return await textChannel.messages.fetch(id, {
+            cache: true,
+            force: true,
+        })
     } catch {
         /* ignore */
     }
 
-    const channels = textChannel.guild.channels.cache
-        .filter(({ type }) => ["text", "news"].includes(type))
-        .array() as (TextChannel | NewsChannel)[]
+    const channels = textChannel.guild.channels.cache.filter(({ type }) =>
+        ["GUILD_TEXT", "GUILD_NEWS"].includes(type)
+    ) as unknown as (NewsChannel | TextChannel)[]
+
     for (const channel of channels) {
         try {
-            const target = await channel.messages.fetch(ID, true, true)
+            const target = await channel.messages.fetch(id, {
+                cache: true,
+                force: true,
+            })
             if (target) return target
         } catch {
             /* ignore */

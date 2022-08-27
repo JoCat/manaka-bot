@@ -1,4 +1,4 @@
-import { Client, VoiceChannel, VoiceState } from "discord.js"
+import { Client, Intents, VoiceChannel, VoiceState } from "discord.js"
 
 import CommandManager from "./../commands/CommandManager"
 import ConfigManager from "./ConfigManager"
@@ -7,7 +7,14 @@ import JsonDBManager from "./JsonDBManager"
 import MusicManager from "./music/MusicManager"
 
 export default class Core {
-    client = new Client()
+    client = new Client({
+        intents: [
+            Intents.FLAGS.GUILDS,
+            Intents.FLAGS.GUILD_MESSAGES,
+            Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+            Intents.FLAGS.GUILD_VOICE_STATES,
+        ],
+    })
     configManager = new ConfigManager()
     commandsManager = new CommandManager(this)
     jsonDBManager = new JsonDBManager()
@@ -15,7 +22,7 @@ export default class Core {
     musicManager = new MusicManager(this)
 
     constructor() {
-        this.client.on("message", (message) =>
+        this.client.on("messageCreate", (message) =>
             this.commandsManager.executeCommand(message)
         )
         this.client.on("voiceStateUpdate", (_, after: VoiceState) =>
@@ -23,7 +30,6 @@ export default class Core {
         )
         this.client.on("ready", () => {
             console.log("Bot started")
-
             if (!this.configManager.dev) {
                 this.client.user.setActivity(
                     `${this.configManager.getConfig().prefix} help`,
@@ -34,41 +40,37 @@ export default class Core {
         this.client.login(this.configManager.botToken)
     }
 
-    private async voiceStateUpdate(after: VoiceState): Promise<void> {
+    private async voiceStateUpdate(state: VoiceState): Promise<void> {
         const voiceChannels = ["741028100317642802"] // TODO вынести в бд + команда
 
-        if (voiceChannels.includes(after.channelID)) {
-            after.guild.channels
-                .create(`Комната ${after.member.user.username}`, {
-                    type: "voice",
-                    parent: (
-                        (await this.client.channels.fetch(
-                            after.channelID
-                        )) as VoiceChannel
-                    ).parent,
+        if (voiceChannels.includes(state.channelId)) {
+            state.guild.channels
+                .create(`Комната ${state.member.user.username}`, {
+                    type: "GUILD_VOICE",
+                    parent: state.channel.parent,
                 })
                 .then((channel) => {
-                    // channel.permissionOverwrites.edit(after.id, {
-                    //     VIEW_CHANNEL: true,
-                    //     MANAGE_CHANNELS: true,
-                    //     CONNECT: true,
-                    // })
-                    after.setChannel(channel)
+                    channel.permissionOverwrites.edit(state.id, {
+                        VIEW_CHANNEL: true,
+                        MANAGE_CHANNELS: true,
+                        CONNECT: true,
+                    })
+                    state.setChannel(channel)
                 })
         }
 
         // Некоторая магия
         this.client.channels.cache
-            .filter((el) => voiceChannels.includes(el.id))
-            .forEach((el: VoiceChannel) =>
-                el.parent.children
+            .filter((channel) => voiceChannels.includes(channel.id))
+            .forEach((channel: VoiceChannel) =>
+                channel.parent.children
                     .filter(
-                        (c) =>
-                            c.type === "voice" &&
-                            c.members.size === 0 &&
-                            !voiceChannels.includes(c.id)
+                        (channel) =>
+                            channel.type === "GUILD_VOICE" &&
+                            channel.members.size === 0 &&
+                            !voiceChannels.includes(channel.id)
                     )
-                    .forEach((c) => c.delete("В голосовой комнате 0 людей!"))
+                    .forEach((channel) => channel.delete("Комната поста"))
             )
     }
 }

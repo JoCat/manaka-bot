@@ -41,10 +41,10 @@ export class HelpCommand extends Command {
 
             const embed = new MessageEmbed()
                 .setColor(color)
-                .setDescription(data)
+                .setDescription(data.join("\n"))
                 .setTimestamp()
                 .setTitle("Список команд")
-            message.channel.send({ embed: embed, split: true })
+            message.channel.send({ embeds: [embed] })
             message.delete()
             return
         }
@@ -61,19 +61,22 @@ export class HelpCommand extends Command {
             .setColor(color)
             .setTimestamp()
             .setTitle("Команда: " + command.name)
-        if (command.aliases)
-            embed.addField("Псевдонимы", command.aliases.join(", "))
-        if (command.description) embed.addField("Описание", command.description)
-        if (command.usage)
-            embed.addField(
-                "Использование",
-                command.usage.map(
-                    (usage) => `\`${prefix} ${command.name} ${usage}\``
-                )
-            )
-        // embed.addField("Временное ограничение", `${command.cooldown || 3} секунд`)
 
-        message.channel.send(embed)
+        const addField = (name: string, value: string) =>
+            embed.addFields({ name, value })
+
+        if (command.aliases) addField("Псевдонимы", command.aliases.join(", "))
+        if (command.description) addField("Описание", command.description)
+        if (command.usage)
+            addField(
+                "Использование",
+                command.usage
+                    .map((usage) => `\`${prefix} ${command.name} ${usage}\``)
+                    .join("\n")
+            )
+        // addField("Временное ограничение", `${command.cooldown || 3} секунд`)
+
+        message.channel.send({ embeds: [embed] })
         message.delete()
     }
 }

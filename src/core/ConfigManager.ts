@@ -1,6 +1,7 @@
 import fs from "fs"
 import { join } from "path"
 
+import { ColorResolvable } from "discord.js"
 import dotenv from "dotenv"
 
 import FileHelper from "./helpers/FileHelper"
@@ -73,5 +74,5 @@ export default class ConfigManager {
 
 export interface BotConfig {
     prefix: string
-    color: string
+    color: ColorResolvable
 }

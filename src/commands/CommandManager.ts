@@ -5,11 +5,12 @@ import { MessageCommand } from "./admin/MessageCommand"
 import { RoleReactionCommand } from "./admin/RoleReactionCommand"
 import { Command, CommandCategory } from "./Command"
 import { HelpCommand } from "./general/HelpCommand"
-import { PlayCommand } from "./music/PlayCommand"
-import { PlaylistCommand } from "./music/PlaylistCommand"
-import { PlayNextCommand } from "./music/PlayNextCommand"
-import { SkipCommand } from "./music/SkipCommand"
-import { StopCommand } from "./music/StopCommand"
+
+// import { PlayCommand } from "./music/PlayCommand"
+// import { PlaylistCommand } from "./music/PlaylistCommand"
+// import { PlayNextCommand } from "./music/PlayNextCommand"
+// import { SkipCommand } from "./music/SkipCommand"
+// import { StopCommand } from "./music/StopCommand"
 
 export default class CommandManager {
     private commands: Collection<string, Command> = new Collection()
@@ -27,11 +28,11 @@ export default class CommandManager {
         this.registerCommand(new HelpCommand(this.core))
         this.registerCommand(new MessageCommand(this.core))
         this.registerCommand(new RoleReactionCommand(this.core))
-        this.registerCommand(new PlayCommand(this.core))
-        this.registerCommand(new SkipCommand(this.core))
-        this.registerCommand(new StopCommand(this.core))
-        this.registerCommand(new PlaylistCommand(this.core))
-        this.registerCommand(new PlayNextCommand(this.core))
+        // this.registerCommand(new PlayCommand(this.core))
+        // this.registerCommand(new SkipCommand(this.core))
+        // this.registerCommand(new StopCommand(this.core))
+        // this.registerCommand(new PlaylistCommand(this.core))
+        // this.registerCommand(new PlayNextCommand(this.core))
     }
 
     registerCommand(command: Command): void {
@@ -68,7 +69,7 @@ export default class CommandManager {
         const prefix = this.core.configManager.getConfig().prefix
 
         if (message.author.bot) return
-        if (!["text", "news"].includes(message.channel.type)) return
+        if (!["GUILD_TEXT", "GUILD_NEWS"].includes(message.channel.type)) return
         if (!message.content.startsWith(`${prefix} `)) return
 
         const args = message.content.slice(prefix.length).trim().split(/ +/)

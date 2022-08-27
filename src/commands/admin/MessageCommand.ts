@@ -30,16 +30,20 @@ export class MessageCommand extends Command {
                         args[0]
                     )
                     // TODO придумать что-то с Embed сообщениями
-                    message.channel.send(
-                        new MessageEmbed()
-                            .setColor(this.core.configManager.getConfig().color)
-                            .setDescription(msg.content)
-                            .setAuthor(
-                                msg.author.username,
-                                msg.author.avatarURL()
-                            )
-                            .setTitle("Содержание сообщения:")
-                    )
+                    message.channel.send({
+                        embeds: [
+                            new MessageEmbed()
+                                .setColor(
+                                    this.core.configManager.getConfig().color
+                                )
+                                .setDescription(msg.content)
+                                .setAuthor({
+                                    name: msg.author.username,
+                                    iconURL: msg.author.avatarURL(),
+                                })
+                                .setTitle("Содержание сообщения:"),
+                        ],
+                    })
                 } catch (error) {
                     if (error.code === 10008)
                         return message.channel.send("Сообщение не найдено")

@@ -1,5 +1,5 @@
 import Playlist from "core/music/Playlist"
-import { Message, MessageEmbed } from "discord.js"
+import { ColorResolvable, Message, MessageEmbed } from "discord.js"
 
 import { Command, CommandCategory } from "../Command"
 
@@ -20,24 +20,28 @@ export class PlaylistCommand extends Command {
             message.guild.id
         )
         const playlist = getTracks(serverPlaylist)
-        const msg = await message.channel.send(
-            getEmbed(
-                playlist,
-                undefined,
-                this.core.configManager.getConfig().color
-            )
-        )
+        const msg = await message.channel.send({
+            embeds: [
+                getEmbed(
+                    playlist,
+                    undefined,
+                    this.core.configManager.getConfig().color
+                ),
+            ],
+        })
 
         message.delete()
         await msg.react("⬅️")
         await msg.react("➡️")
         let page = 0
 
-        const collector = msg.createReactionCollector((reaction, user) => {
-            return (
-                ["⬅️", "➡️"].includes(reaction.emoji.name) &&
-                user.id === message.author.id
-            )
+        const collector = msg.createReactionCollector({
+            filter: (reaction, user) => {
+                return (
+                    ["⬅️", "➡️"].includes(reaction.emoji.name) &&
+                    user.id === message.author.id
+                )
+            },
         })
         collector.on("collect", async (reaction, user) => {
             await reaction.users.remove(user)
@@ -50,13 +54,15 @@ export class PlaylistCommand extends Command {
             else return
 
             const playlist = getTracks(serverPlaylist, page)
-            msg.edit(
-                getEmbed(
-                    playlist,
-                    page,
-                    this.core.configManager.getConfig().color
-                )
-            )
+            msg.edit({
+                embeds: [
+                    getEmbed(
+                        playlist,
+                        page,
+                        this.core.configManager.getConfig().color
+                    ),
+                ],
+            })
         })
     }
 }
@@ -75,12 +81,20 @@ function getTracks(serverPlaylist: Playlist, page = 0) {
 function getEmbed(
     { songsCount, playlist }: { songsCount: number; playlist: string[] },
     page = 0,
-    color
+    color: ColorResolvable
 ) {
     return new MessageEmbed()
         .setColor(color)
         .setDescription(playlist.join("\n"))
         .setTitle("Плейлист")
-        .addField("Всего треков в плейлисте", songsCount, true)
-        .addField("Текущая страница", ++page, true)
+        .addFields({
+            name: "Всего треков в плейлисте",
+            value: songsCount.toString(),
+            inline: true,
+        })
+        .addFields({
+            name: "Текущая страница",
+            value: (++page).toString(),
+            inline: true,
+        })
 }

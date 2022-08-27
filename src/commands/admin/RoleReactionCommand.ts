@@ -105,17 +105,21 @@ export class RoleReactionCommand extends Command {
                             )
                         })
                     if (list.length === 0) list.push("*Список пуст*")
-                    message.channel.send(
-                        new MessageEmbed()
-                            .setColor(this.core.configManager.getConfig().color)
-                            .setDescription(list.join("\n"))
-                            .setTitle("Список событий")
-                            .setTimestamp()
-                            .setFooter(
-                                "Запросил " + message.author.tag,
-                                message.author.avatarURL()
-                            )
-                    )
+                    message.channel.send({
+                        embeds: [
+                            new MessageEmbed()
+                                .setColor(
+                                    this.core.configManager.getConfig().color
+                                )
+                                .setDescription(list.join("\n"))
+                                .setTitle("Список событий")
+                                .setTimestamp()
+                                .setFooter({
+                                    text: "Запросил " + message.author.tag,
+                                    iconURL: message.author.avatarURL(),
+                                }),
+                        ],
+                    })
                 }
                 break
 
