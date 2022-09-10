@@ -5,12 +5,11 @@ import { MessageCommand } from "./admin/MessageCommand"
 import { RoleReactionCommand } from "./admin/RoleReactionCommand"
 import { Command, CommandCategory } from "./Command"
 import { HelpCommand } from "./general/HelpCommand"
-
-// import { PlayCommand } from "./music/PlayCommand"
-// import { PlaylistCommand } from "./music/PlaylistCommand"
-// import { PlayNextCommand } from "./music/PlayNextCommand"
-// import { SkipCommand } from "./music/SkipCommand"
-// import { StopCommand } from "./music/StopCommand"
+import { PlayCommand } from "./music/PlayCommand"
+import { PlaylistCommand } from "./music/PlaylistCommand"
+import { PlayNextCommand } from "./music/PlayNextCommand"
+import { SkipCommand } from "./music/SkipCommand"
+import { StopCommand } from "./music/StopCommand"
 
 export const availableChannelTypes = [
     ChannelType.GuildText,
@@ -36,11 +35,11 @@ export default class CommandManager {
         this.registerCommand(new HelpCommand(this.core))
         this.registerCommand(new MessageCommand(this.core))
         this.registerCommand(new RoleReactionCommand(this.core))
-        // this.registerCommand(new PlayCommand(this.core))
-        // this.registerCommand(new SkipCommand(this.core))
-        // this.registerCommand(new StopCommand(this.core))
-        // this.registerCommand(new PlaylistCommand(this.core))
-        // this.registerCommand(new PlayNextCommand(this.core))
+        this.registerCommand(new PlayCommand(this.core))
+        this.registerCommand(new SkipCommand(this.core))
+        this.registerCommand(new StopCommand(this.core))
+        this.registerCommand(new PlaylistCommand(this.core))
+        this.registerCommand(new PlayNextCommand(this.core))
     }
 
     registerCommand(command: Command): void {
