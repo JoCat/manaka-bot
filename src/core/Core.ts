@@ -1,4 +1,11 @@
-import { Client, Intents, VoiceChannel, VoiceState } from "discord.js"
+import {
+    ActivityType,
+    ChannelType,
+    Client,
+    GatewayIntentBits,
+    VoiceChannel,
+    VoiceState,
+} from "discord.js"
 
 import CommandManager from "./../commands/CommandManager"
 import ConfigManager from "./ConfigManager"
@@ -9,10 +16,11 @@ import MusicManager from "./music/MusicManager"
 export default class Core {
     client = new Client({
         intents: [
-            Intents.FLAGS.GUILDS,
-            Intents.FLAGS.GUILD_MESSAGES,
-            Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-            Intents.FLAGS.GUILD_VOICE_STATES,
+            GatewayIntentBits.Guilds,
+            GatewayIntentBits.GuildMessages,
+            GatewayIntentBits.GuildMessageReactions,
+            GatewayIntentBits.GuildVoiceStates,
+            GatewayIntentBits.MessageContent,
         ],
     })
     configManager = new ConfigManager()
@@ -22,9 +30,9 @@ export default class Core {
     musicManager = new MusicManager(this)
 
     constructor() {
-        this.client.on("messageCreate", (message) =>
+        this.client.on("messageCreate", (message) => {
             this.commandsManager.executeCommand(message)
-        )
+        })
         this.client.on("voiceStateUpdate", (_, after: VoiceState) =>
             this.voiceStateUpdate(after)
         )
@@ -33,7 +41,7 @@ export default class Core {
             if (!this.configManager.dev) {
                 this.client.user.setActivity(
                     `${this.configManager.getConfig().prefix} help`,
-                    { type: "WATCHING" }
+                    { type: ActivityType.Watching }
                 )
             }
         })
@@ -45,15 +53,16 @@ export default class Core {
 
         if (voiceChannels.includes(state.channelId)) {
             state.guild.channels
-                .create(`Комната ${state.member.user.username}`, {
-                    type: "GUILD_VOICE",
+                .create({
+                    name: `Комната ${state.member.user.username}`,
+                    type: ChannelType.GuildVoice,
                     parent: state.channel.parent,
                 })
                 .then((channel) => {
                     channel.permissionOverwrites.edit(state.id, {
-                        VIEW_CHANNEL: true,
-                        MANAGE_CHANNELS: true,
-                        CONNECT: true,
+                        ViewChannel: true,
+                        ManageChannels: true,
+                        Connect: true,
                     })
                     state.setChannel(channel)
                 })
@@ -63,14 +72,14 @@ export default class Core {
         this.client.channels.cache
             .filter((channel) => voiceChannels.includes(channel.id))
             .forEach((channel: VoiceChannel) =>
-                channel.parent.children
+                channel.parent.children.cache
                     .filter(
                         (channel) =>
-                            channel.type === "GUILD_VOICE" &&
+                            channel.type === ChannelType.GuildVoice &&
                             channel.members.size === 0 &&
                             !voiceChannels.includes(channel.id)
                     )
-                    .forEach((channel) => channel.delete("Комната поста"))
+                    .forEach((channel) => channel.delete("Комната пуста"))
             )
     }
 }

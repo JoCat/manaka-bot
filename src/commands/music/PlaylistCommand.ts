@@ -1,5 +1,5 @@
 import Playlist from "core/music/Playlist"
-import { ColorResolvable, Message, MessageEmbed } from "discord.js"
+import { ColorResolvable, EmbedBuilder, Message } from "discord.js"
 
 import { Command, CommandCategory } from "../Command"
 
@@ -83,7 +83,7 @@ function getEmbed(
     page = 0,
     color: ColorResolvable
 ) {
-    return new MessageEmbed()
+    return new EmbedBuilder()
         .setColor(color)
         .setDescription(playlist.join("\n"))
         .setTitle("Плейлист")

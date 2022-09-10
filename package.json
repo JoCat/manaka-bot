@@ -30,9 +30,9 @@
     "homepage": "https://gitlab.com/JoCat/manaka-bot#readme",
     "dependencies": {
         "@discordjs/opus": "^0.8.0",
-        "@discordjs/voice": "^0.10.0",
+        "@discordjs/voice": "^0.11.0",
         "bufferutil": "^4.0.6",
-        "discord.js": "^13.10.3",
+        "discord.js": "^14.3.0",
         "dotenv": "^16.0.0",
         "erlpack": "github:discord/erlpack",
         "ffmpeg-static": "^5.0.0",

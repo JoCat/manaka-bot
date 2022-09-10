@@ -1,4 +1,4 @@
-import { Message, MessageEmbed, TextChannel } from "discord.js"
+import { EmbedBuilder, Message, TextChannel } from "discord.js"
 
 import { findMessage } from "../../core/helpers/Utils"
 import { Command, CommandCategory } from "../Command"
@@ -32,7 +32,7 @@ export class MessageCommand extends Command {
                     // TODO придумать что-то с Embed сообщениями
                     message.channel.send({
                         embeds: [
-                            new MessageEmbed()
+                            new EmbedBuilder()
                                 .setColor(
                                     this.core.configManager.getConfig().color
                                 )

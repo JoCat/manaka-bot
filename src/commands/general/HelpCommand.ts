@@ -1,4 +1,4 @@
-import { Message, MessageEmbed } from "discord.js"
+import { EmbedBuilder, Message } from "discord.js"
 
 import { Command, CommandCategory } from "../Command"
 
@@ -39,7 +39,7 @@ export class HelpCommand extends Command {
                 `Напишите \`${prefix} help\` и \`[command name]\`, чтобы получить подробную информацию. **Например:** \`${prefix} help help\``
             )
 
-            const embed = new MessageEmbed()
+            const embed = new EmbedBuilder()
                 .setColor(color)
                 .setDescription(data.join("\n"))
                 .setTimestamp()
@@ -57,7 +57,7 @@ export class HelpCommand extends Command {
                 `Команда не найдена, воспользуйтесь \`${prefix} help\` или проверьте корректность команды.`
             )
 
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setColor(color)
             .setTimestamp()
             .setTitle("Команда: " + command.name)

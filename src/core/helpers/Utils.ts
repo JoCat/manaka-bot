@@ -1,4 +1,5 @@
-import { Message, NewsChannel, TextChannel } from "discord.js"
+import { availableChannelTypes } from "commands/CommandManager"
+import { Message, NewsChannel, TextChannel, ThreadChannel } from "discord.js"
 
 // export function checkPermission (permission, member) {
 //     if (permission === 'admin') {
@@ -17,7 +18,8 @@ export async function findMessage(
     id: string
 ): Promise<Message> {
     try {
-        return await textChannel.messages.fetch(id, {
+        return await textChannel.messages.fetch({
+            message: id,
             cache: true,
             force: true,
         })
@@ -26,12 +28,13 @@ export async function findMessage(
     }
 
     const channels = textChannel.guild.channels.cache.filter(({ type }) =>
-        ["GUILD_TEXT", "GUILD_NEWS"].includes(type)
-    ) as unknown as (NewsChannel | TextChannel)[]
+        availableChannelTypes.includes(type)
+    ) as unknown as (NewsChannel | TextChannel | ThreadChannel)[]
 
     for (const channel of channels) {
         try {
-            const target = await channel.messages.fetch(id, {
+            const target = await channel.messages.fetch({
+                message: id,
                 cache: true,
                 force: true,
             })

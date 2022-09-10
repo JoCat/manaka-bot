@@ -1,5 +1,5 @@
 import Core from "core/Core"
-import { Collection, Message } from "discord.js"
+import { ChannelType, Collection, Message } from "discord.js"
 
 import { MessageCommand } from "./admin/MessageCommand"
 import { RoleReactionCommand } from "./admin/RoleReactionCommand"
@@ -11,6 +11,14 @@ import { HelpCommand } from "./general/HelpCommand"
 // import { PlayNextCommand } from "./music/PlayNextCommand"
 // import { SkipCommand } from "./music/SkipCommand"
 // import { StopCommand } from "./music/StopCommand"
+
+export const availableChannelTypes = [
+    ChannelType.GuildText,
+    ChannelType.GuildNews,
+    ChannelType.GuildNewsThread,
+    ChannelType.GuildPublicThread,
+    ChannelType.GuildPrivateThread,
+]
 
 export default class CommandManager {
     private commands: Collection<string, Command> = new Collection()
@@ -69,7 +77,7 @@ export default class CommandManager {
         const prefix = this.core.configManager.getConfig().prefix
 
         if (message.author.bot) return
-        if (!["GUILD_TEXT", "GUILD_NEWS"].includes(message.channel.type)) return
+        if (!availableChannelTypes.includes(message.channel.type)) return
         if (!message.content.startsWith(`${prefix} `)) return
 
         const args = message.content.slice(prefix.length).trim().split(/ +/)

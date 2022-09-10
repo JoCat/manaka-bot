@@ -12,7 +12,7 @@
 //     joinVoiceChannel,
 // } from "@discordjs/voice"
 // import Core from "core/Core"
-// import { Message, MessageEmbed, TextChannel } from "discord.js"
+// import { Message, EmbedBuilder, TextChannel } from "discord.js"
 // import { playlist_info, stream, validate, video_basic_info } from "play-dl"
 
 // class Playlist extends EventEmitter {
@@ -57,7 +57,7 @@
 //             if (songs.length > 1) {
 //                 return message.channel.send({
 //                     embeds: [
-//                         new MessageEmbed()
+//                         new EmbedBuilder()
 //                             .setColor(this.core.configManager.getConfig().color)
 //                             .setTitle("Плейлист добавлен в очередь"),
 //                     ],
@@ -65,7 +65,7 @@
 //             }
 //             return message.channel.send({
 //                 embeds: [
-//                     new MessageEmbed()
+//                     new EmbedBuilder()
 //                         .setColor(this.core.configManager.getConfig().color)
 //                         .setTitle("Трек добавлен в очередь")
 //                         .setDescription(`[${songs[0].title}](${songs[0].url})`),
@@ -98,7 +98,7 @@
 
 //         channel.send({
 //             embeds: [
-//                 new MessageEmbed()
+//                 new EmbedBuilder()
 //                     .setColor(this.core.configManager.getConfig().color)
 //                     .setTitle("Сейчас играет")
 //                     .setDescription(`[${song.title}](${song.url})`),

@@ -1,4 +1,4 @@
-import { Message, MessageEmbed, TextChannel, Util } from "discord.js"
+import { EmbedBuilder, Message, TextChannel, parseEmoji } from "discord.js"
 
 import { findMessage } from "../../core/helpers/Utils"
 import { Command, CommandCategory } from "../Command"
@@ -31,7 +31,7 @@ export class RoleReactionCommand extends Command {
                             "**Ошибка!** Не указан Emoji!"
                         )
 
-                    const parsedEmoji = Util.parseEmoji(emoji)
+                    const parsedEmoji = parseEmoji(emoji)
                     if (parsedEmoji === null)
                         return message.channel.send(
                             "**Ошибка!** Указан некорректный Emoji!"
@@ -107,7 +107,7 @@ export class RoleReactionCommand extends Command {
                     if (list.length === 0) list.push("*Список пуст*")
                     message.channel.send({
                         embeds: [
-                            new MessageEmbed()
+                            new EmbedBuilder()
                                 .setColor(
                                     this.core.configManager.getConfig().color
                                 )

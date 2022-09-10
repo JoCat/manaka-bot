@@ -15,6 +15,14 @@ export default class ConfigManager {
     public readonly dev = process.env.DEV === "true"
 
     constructor() {
+        if (this.dev) {
+            this.config = {
+                prefix: "mm",
+                color: "#ff0000",
+            }
+            return
+        }
+
         if (fs.existsSync(this.configFile)) {
             console.log("Loading configuration")
             this.load()
@@ -48,10 +56,6 @@ export default class ConfigManager {
                 )
             }
             console.error(e)
-        }
-
-        if (this.dev) {
-            this.config.prefix = "mm"
         }
     }
 
