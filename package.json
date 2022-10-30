@@ -29,8 +29,8 @@
     },
     "homepage": "https://gitlab.com/JoCat/manaka-bot#readme",
     "dependencies": {
-        "@discordjs/opus": "^0.8.0",
-        "@discordjs/voice": "^0.11.0",
+        "@discordjs/opus": "^0.9.0",
+        "@discordjs/voice": "^0.13.0",
         "bufferutil": "^4.0.6",
         "discord.js": "^14.3.0",
         "dotenv": "^16.0.0",
@@ -42,7 +42,7 @@
         "zlib-sync": "^0.1.7"
     },
     "devDependencies": {
-        "@types/node": "^16.11.26",
+        "@types/node": "^18.11.8",
         "@typescript-eslint/eslint-plugin": "^5.19.0",
         "@typescript-eslint/parser": "^5.19.0",
         "eslint": "^8.13.0",
