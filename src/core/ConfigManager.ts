@@ -1,5 +1,5 @@
 import fs from "fs"
-import { join } from "path"
+import { resolve } from "path"
 
 import { ColorResolvable } from "discord.js"
 import dotenv from "dotenv"
@@ -9,7 +9,7 @@ import FileHelper from "./helpers/FileHelper"
 dotenv.config()
 
 export default class ConfigManager {
-    private configFile = join(FileHelper.runtimeDir, "botConfig.json")
+    private configFile = resolve(FileHelper.runtimeDir, "botConfig.json")
     private config: BotConfig
     public readonly botToken = process.env.BOT_TOKEN
     public readonly dev = process.env.DEV === "true"

@@ -1,9 +1,9 @@
 import fs from "fs"
-import { join } from "path"
+import { resolve } from "path"
 
 export default class FileHelper {
-    static rootDir = join(__dirname, "..")
-    static runtimeDir = join(FileHelper.rootDir, "runtime")
+    static rootDir = resolve(__dirname, "..")
+    static runtimeDir = resolve(FileHelper.rootDir, "runtime")
 
     static createMissing(): void {
         if (!fs.existsSync(this.runtimeDir)) fs.mkdirSync(this.runtimeDir)

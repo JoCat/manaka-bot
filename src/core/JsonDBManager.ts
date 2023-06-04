@@ -4,22 +4,20 @@ import { join } from "path"
 import FileHelper from "./helpers/FileHelper"
 
 export default class JsonDBManager {
-    private configFile = join(FileHelper.runtimeDir, "DB.json")
+    private dbFile = join(FileHelper.runtimeDir, "DB.json")
     private db: Record<string, Table> = {}
 
     constructor() {
-        if (fs.existsSync(this.configFile)) {
+        if (fs.existsSync(this.dbFile)) {
             try {
-                this.db = JSON.parse(
-                    fs.readFileSync(this.configFile).toString()
-                )
+                this.db = JSON.parse(fs.readFileSync(this.dbFile).toString())
             } catch (error) {
                 console.error("Json syntax broken. Try fix or delete DB.json")
                 console.error(error)
                 process.exit(1)
             }
         } else {
-            fs.writeFileSync(this.configFile, "{}")
+            fs.writeFileSync(this.dbFile, "{}")
         }
     }
 
@@ -66,7 +64,7 @@ export default class JsonDBManager {
     }
 
     private saveDB() {
-        fs.writeFileSync(this.configFile, JSON.stringify(this.db, null, 4))
+        fs.writeFileSync(this.dbFile, JSON.stringify(this.db, null, 4))
     }
 }
 
