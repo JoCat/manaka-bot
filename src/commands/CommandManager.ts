@@ -13,10 +13,10 @@ import { StopCommand } from "./music/StopCommand"
 
 export const availableChannelTypes = [
     ChannelType.GuildText,
-    ChannelType.GuildNews,
-    ChannelType.GuildNewsThread,
-    ChannelType.GuildPublicThread,
-    ChannelType.GuildPrivateThread,
+    ChannelType.GuildAnnouncement,
+    ChannelType.AnnouncementThread,
+    ChannelType.PublicThread,
+    ChannelType.PrivateThread,
 ]
 
 export default class CommandManager {

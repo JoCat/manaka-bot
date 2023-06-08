@@ -5,11 +5,10 @@
     "main": "dist/index.js",
     "scripts": {
         "dev": "npm run build && npm run start:dev",
-        "build": "npm run clean && tsup",
+        "build": "tsup",
         "start:dev": "node .",
         "start": "pm2 start dist/index.js --name=bot -o logs/bot.log -e logs/error.log --log-date-format \"DD-MM-YYYY HH:mm:ss\"",
         "deploy": "npm ci && npm run build && pm2 delete -s bot || ':' && npm run start",
-        "clean": "rimraf dist",
         "prettier": "prettier --write src",
         "lint": "eslint . --ext .ts",
         "lint:fix": "eslint . --ext .ts --fix"
@@ -30,19 +29,19 @@
     "homepage": "https://gitlab.com/JoCat/manaka-bot#readme",
     "dependencies": {
         "@discordjs/opus": "^0.9.0",
-        "@discordjs/voice": "^0.13.0",
+        "@discordjs/voice": "^0.16.0",
         "bufferutil": "^4.0.6",
         "discord.js": "^14.3.0",
         "dotenv": "^16.0.0",
         "erlpack": "github:discord/erlpack",
         "ffmpeg-static": "^5.0.0",
-        "libsodium-wrappers": "^0.7.10",
+        "libsodium-wrappers": "^0.7.11",
         "play-dl": "^1.9.4",
         "utf-8-validate": "^6.0.3",
         "zlib-sync": "^0.1.7"
     },
     "devDependencies": {
-        "@types/node": "^18.11.8",
+        "@types/node": "^18.16.16",
         "@typescript-eslint/eslint-plugin": "^5.19.0",
         "@typescript-eslint/parser": "^5.19.0",
         "eslint": "^8.13.0",
@@ -50,9 +49,8 @@
         "nodemon": "^2.0.19",
         "prettier": "^2.4.0",
         "prettier-plugin-import-sort": "0.0.7",
-        "rimraf": "^4.4.0",
         "tsup": "^6.2.1",
-        "typescript": "^4.9.5"
+        "typescript": "^5.1.3"
     },
     "importSort": {
         ".ts": {
