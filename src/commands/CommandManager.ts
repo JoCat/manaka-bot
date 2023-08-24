@@ -17,6 +17,7 @@ export const availableChannelTypes = [
     ChannelType.AnnouncementThread,
     ChannelType.PublicThread,
     ChannelType.PrivateThread,
+    ChannelType.GuildVoice,
 ]
 
 export default class CommandManager {
