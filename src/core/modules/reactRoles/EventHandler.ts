@@ -1,13 +1,13 @@
 import { GuildManager } from "discord.js"
 
-import { DiscordEmoji, RawDiscordReactionEvent } from "./types"
+import { DiscordEmoji, RawDiscordReactionEvent } from "../../../types"
 
 export default class EventHandler {
     constructor(
         private guilds: GuildManager,
         public messageID: string,
         public roleID: string,
-        public emoji: DiscordEmoji
+        public emoji: DiscordEmoji,
     ) {}
 
     async handler(data: RawDiscordReactionEvent): Promise<void> {

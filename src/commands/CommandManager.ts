@@ -1,5 +1,5 @@
 import Core from "core/Core"
-import { Collection, Message } from "discord.js"
+import { Collection, Message, REST, Routes } from "discord.js"
 
 import { MessageCommand } from "./admin/MessageCommand"
 import { RoleReactionCommand } from "./admin/RoleReactionCommand"
@@ -18,6 +18,48 @@ export default class CommandManager {
 
     constructor(private core: Core) {
         this.commandsInit()
+        // this.newCommandsInit()
+    }
+
+    async newCommandsInit() {
+        const rest = new REST({ version: "10" }).setToken(
+            this.core.configManager.botToken,
+        )
+
+        try {
+            console.log("Started refreshing application (/) commands.")
+
+            await rest.put(Routes.applicationCommands("667447976301428757"), {
+                body: this.commands.map(({ name, description }) => ({
+                    name,
+                    description,
+                })),
+            })
+
+            console.log("Successfully reloaded application (/) commands.")
+        } catch (error) {
+            console.error(error)
+        }
+
+        this.core.client.on("interactionCreate", async (interaction) => {
+            if (!interaction.isChatInputCommand()) return
+
+            if (interaction.commandName === "ping") {
+                await interaction.reply("Pong!")
+            }
+
+            const command = this.getCommand(interaction.commandName)
+
+            if (command) {
+                // if (!this.checkPermissions(command, interaction.user.id))
+                //     return await interaction.reply(
+                //         "У вас нет прав для выполнения этой команды!",
+                //     )
+                // command.run(interaction, args)
+
+                await interaction.reply("Pong!")
+            } else await interaction.reply("Команда не найдена!")
+        })
     }
 
     getCommands() {
@@ -25,6 +67,10 @@ export default class CommandManager {
     }
 
     commandsInit(): void {
+        this.core.client.on("messageCreate", (message) => {
+            this.executeCommand(message)
+        })
+
         this.registerCommand(new HelpCommand(this.core))
         this.registerCommand(new MessageCommand(this.core))
         this.registerCommand(new RoleReactionCommand(this.core))

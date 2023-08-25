@@ -3,7 +3,7 @@ import crypto from "crypto"
 import Core from "core/Core"
 
 import EventHandler from "./EventHandler"
-import { DiscordEmoji, RawDiscordReactionEvent } from "./types"
+import { DiscordEmoji, RawDiscordReactionEvent } from "../../../types"
 
 export default class EventsManager {
     private events: Map<string, EventHandler> = new Map()
@@ -11,49 +11,63 @@ export default class EventsManager {
     constructor(private core: Core) {
         core.jsonDBManager
             .getAllData("events")
-            .forEach((event: EventHandler) => {
-                const token = this.generateToken(event.messageID, event.emoji)
-                this.events.set(
-                    token,
-                    new EventHandler(
-                        core.client.guilds,
-                        event.messageID,
-                        event.roleID,
-                        event.emoji
-                    )
-                )
+            .forEach(({ messageID, roleID, emoji }: EventHandler) => {
+                this.loadEvent(messageID, roleID, emoji)
             })
 
+        // TODO New react logic
+        // this.core.client.channels
+        //     .fetch("741047839320178852")
+        //     .then((channel) => {
+        //         if (channel.isTextBased()) {
+        //             channel.messages
+        //                 .fetch("742740017457397819")
+        //                 .then((msg) => console.log(msg))
+        //         }
+        //     })
+
+        // core.client.on("messageReactionAdd", (msg, user) => {
+        //     console.log(msg, user)
+        // })
+        // core.client.on("messageReactionRemove", (msg, user) => {
+        //     console.log(msg, user)
+        // })
         core.client.on("raw", (data: RawDiscordReactionEvent) => {
             if (
                 !["MESSAGE_REACTION_REMOVE", "MESSAGE_REACTION_ADD"].includes(
-                    data.t
+                    data.t,
                 )
             ) {
                 return
             }
 
             const event = this.events.get(
-                this.generateToken(data.d.message_id, data.d.emoji)
+                this.generateToken(data.d.message_id, data.d.emoji),
             )
             if (event === undefined) return
             event.handler(data)
         })
     }
 
-    public addEventListener(
-        messageID: string,
-        roleID: string,
-        emoji: DiscordEmoji
-    ): void {
+    private loadEvent(messageID: string, roleID: string, emoji: DiscordEmoji) {
+        const token = this.generateToken(messageID, emoji)
         const handler = new EventHandler(
             this.core.client.guilds,
             messageID,
             roleID,
-            emoji
+            emoji,
         )
+        this.events.set(token, handler)
+        return handler
+    }
+
+    public addEventListener(
+        messageID: string,
+        roleID: string,
+        emoji: DiscordEmoji,
+    ): void {
+        const handler = this.loadEvent(messageID, roleID, emoji)
         this.core.jsonDBManager.addData("events", handler)
-        this.events.set(this.generateToken(messageID, emoji), handler)
     }
 
     public removeEventListener(token: string): boolean {

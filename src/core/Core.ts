@@ -1,17 +1,11 @@
-import {
-    ActivityType,
-    ChannelType,
-    Client,
-    GatewayIntentBits,
-    VoiceChannel,
-    VoiceState,
-} from "discord.js"
+import { ActivityType, Client, GatewayIntentBits } from "discord.js"
 
 import CommandManager from "./../commands/CommandManager"
 import ConfigManager from "./ConfigManager"
-import EventsManager from "./events/EventsManager"
+import EventsManager from "./modules/reactRoles/EventsManager"
 import JsonDBManager from "./JsonDBManager"
 import MusicManager from "./music/MusicManager"
+import { VoiceRooms } from "./modules/voiceRooms"
 
 export default class Core {
     client = new Client({
@@ -26,60 +20,23 @@ export default class Core {
     configManager = new ConfigManager()
     commandsManager = new CommandManager(this)
     jsonDBManager = new JsonDBManager()
-    eventsManager = new EventsManager(this)
     musicManager = new MusicManager(this)
+    eventsManager: EventsManager
 
     constructor() {
-        this.client.on("messageCreate", (message) => {
-            this.commandsManager.executeCommand(message)
-        })
-        this.client.on("voiceStateUpdate", (_, after: VoiceState) =>
-            this.voiceStateUpdate(after)
-        )
+        new VoiceRooms(this.client)
+
         this.client.on("ready", () => {
-            console.log("Bot started")
+            this.eventsManager = new EventsManager(this)
+
             if (!this.configManager.dev) {
                 this.client.user.setActivity(
                     `${this.configManager.getConfig().prefix} help`,
-                    { type: ActivityType.Watching }
+                    { type: ActivityType.Watching },
                 )
             }
+            console.log("Bot started")
         })
         this.client.login(this.configManager.botToken)
-    }
-
-    private async voiceStateUpdate(state: VoiceState): Promise<void> {
-        const voiceChannels = ["741028100317642802"] // TODO вынести в бд + команда
-
-        if (voiceChannels.includes(state.channelId)) {
-            state.guild.channels
-                .create({
-                    name: `Комната ${state.member.user.username}`,
-                    type: ChannelType.GuildVoice,
-                    parent: state.channel.parent,
-                })
-                .then((channel) => {
-                    channel.permissionOverwrites.edit(state.id, {
-                        ViewChannel: true,
-                        ManageChannels: true,
-                        Connect: true,
-                    })
-                    state.setChannel(channel)
-                })
-        }
-
-        // Некоторая магия
-        this.client.channels.cache
-            .filter((channel) => voiceChannels.includes(channel.id))
-            .forEach((channel: VoiceChannel) =>
-                channel.parent.children.cache
-                    .filter(
-                        (channel) =>
-                            channel.type === ChannelType.GuildVoice &&
-                            channel.members.size === 0 &&
-                            !voiceChannels.includes(channel.id)
-                    )
-                    .forEach((channel) => channel.delete("Комната пуста"))
-            )
     }
 }
