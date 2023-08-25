@@ -1,10 +1,9 @@
 import fs from "fs"
 import { join } from "path"
 
-import FileHelper from "./helpers/FileHelper"
-
+// TODO Remove
 export default class JsonDBManager {
-    private dbFile = join(FileHelper.runtimeDir, "DB.json")
+    private dbFile = join(__dirname, "..", "runtime", "DB.json")
     private db: Record<string, Table> = {}
 
     constructor() {
@@ -34,12 +33,12 @@ export default class JsonDBManager {
     public deleteData(
         tableName: string,
         key: string,
-        value: string | number
+        value: string | number,
     ): void {
         const table = this.getTable(tableName).entries
         table.splice(
             table.findIndex((e) => e[key] === value),
-            1
+            1,
         )
         this.saveDB()
     }

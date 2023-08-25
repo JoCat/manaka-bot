@@ -1,5 +1,5 @@
 import Core from "core/Core"
-import { ChannelType, Collection, Message } from "discord.js"
+import { Collection, Message } from "discord.js"
 
 import { MessageCommand } from "./admin/MessageCommand"
 import { RoleReactionCommand } from "./admin/RoleReactionCommand"
@@ -10,15 +10,7 @@ import { PlaylistCommand } from "./music/PlaylistCommand"
 import { PlayNextCommand } from "./music/PlayNextCommand"
 import { SkipCommand } from "./music/SkipCommand"
 import { StopCommand } from "./music/StopCommand"
-
-export const availableChannelTypes = [
-    ChannelType.GuildText,
-    ChannelType.GuildAnnouncement,
-    ChannelType.AnnouncementThread,
-    ChannelType.PublicThread,
-    ChannelType.PrivateThread,
-    ChannelType.GuildVoice,
-]
+import { availableChannelTypes } from "core/helpers/Utils"
 
 export default class CommandManager {
     private commands: Collection<string, Command> = new Collection()
@@ -86,7 +78,7 @@ export default class CommandManager {
         if (command) {
             if (!this.checkPermissions(command, message.member.id))
                 return message.channel.send(
-                    "У вас нет прав для выполнения этой команды!"
+                    "У вас нет прав для выполнения этой команды!",
                 )
             command.run(message, args)
         } else message.channel.send("Команда не найдена!")

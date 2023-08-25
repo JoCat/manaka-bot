@@ -1,21 +1,17 @@
-import { availableChannelTypes } from "commands/CommandManager"
-import { Message, NewsChannel, TextChannel, ThreadChannel } from "discord.js"
+import { ChannelType, Message, TextBasedChannel, TextChannel } from "discord.js"
 
-// export function checkPermission (permission, member) {
-//     if (permission === 'admin') {
-//         return admin_list.indexOf(member.id) !== -1;
-//     } else if (permission === 'event_manager') {
-//         return event_manager_list.indexOf(member.id) !== -1;
-//     }
-// }
-
-// export function parseDiscordUserTag(user_tag) {
-//     return user_tag.replace(/[<>@!]/g,'');
-// }
+export const availableChannelTypes = [
+    ChannelType.GuildText,
+    ChannelType.GuildVoice,
+    ChannelType.GuildAnnouncement,
+    ChannelType.AnnouncementThread,
+    ChannelType.PublicThread,
+    ChannelType.PrivateThread,
+]
 
 export async function findMessage(
     textChannel: TextChannel,
-    id: string
+    id: string,
 ): Promise<Message> {
     try {
         return await textChannel.messages.fetch({
@@ -28,12 +24,12 @@ export async function findMessage(
     }
 
     const channels = textChannel.guild.channels.cache.filter(({ type }) =>
-        availableChannelTypes.includes(type)
-    ) as unknown as (NewsChannel | TextChannel | ThreadChannel)[]
+        availableChannelTypes.includes(type),
+    )
 
-    for (const channel of channels) {
+    for (const [, channel] of channels) {
         try {
-            const target = await channel.messages.fetch({
+            const target = await (<TextBasedChannel>channel).messages.fetch({
                 message: id,
                 cache: true,
                 force: true,
