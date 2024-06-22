@@ -1,5 +1,10 @@
 import Core from "core/Core"
-import { Message } from "discord.js"
+import {
+    CacheType,
+    ChatInputCommandInteraction,
+    Message,
+    SlashCommandBuilder,
+} from "discord.js"
 
 export abstract class Command {
     readonly name: string
@@ -12,6 +17,18 @@ export abstract class Command {
     constructor(protected core: Core) {}
 
     abstract run(message: Message, args: string[]): any
+
+    // New features
+
+    readonly commandData: SlashCommandBuilder
+
+    //TODO Temp
+    execute(interaction: ChatInputCommandInteraction<CacheType>): any {
+        interaction.reply({
+            content: `Команда \`${this.name}\` еще не перенесена`,
+            ephemeral: true,
+        })
+    }
 }
 
 export enum CommandCategory {

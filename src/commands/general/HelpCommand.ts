@@ -20,7 +20,7 @@ export class HelpCommand extends Command {
                     .filter((cmd) => cmd.category === category)
                     .map(
                         (cmd) =>
-                            `\`${prefix} ${cmd.name}\` – ${cmd.description}`
+                            `\`${prefix} ${cmd.name}\` – ${cmd.description}`,
                     )
                     .join("\n")
                 return `**${categoryName}:**\n${cmdList}\n`
@@ -36,7 +36,7 @@ export class HelpCommand extends Command {
             }
 
             data.push(
-                `Напишите \`${prefix} help\` и \`[command name]\`, чтобы получить подробную информацию. **Например:** \`${prefix} help help\``
+                `Напишите \`${prefix} help\` и \`[command name]\`, чтобы получить подробную информацию. **Например:** \`${prefix} help help\``,
             )
 
             const embed = new EmbedBuilder()
@@ -54,7 +54,7 @@ export class HelpCommand extends Command {
 
         if (!command)
             return message.channel.send(
-                `Команда не найдена, воспользуйтесь \`${prefix} help\` или проверьте корректность команды.`
+                `Команда не найдена, воспользуйтесь \`${prefix} help\` или проверьте корректность команды.`,
             )
 
         const embed = new EmbedBuilder()
@@ -72,7 +72,7 @@ export class HelpCommand extends Command {
                 "Использование",
                 command.usage
                     .map((usage) => `\`${prefix} ${command.name} ${usage}\``)
-                    .join("\n")
+                    .join("\n"),
             )
         // addField("Временное ограничение", `${command.cooldown || 3} секунд`)
 

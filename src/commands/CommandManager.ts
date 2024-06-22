@@ -1,5 +1,5 @@
 import Core from "core/Core"
-import { Collection, Message, REST, Routes } from "discord.js"
+import { Collection, Interaction, Message, REST, Routes } from "discord.js"
 
 import { MessageCommand } from "./admin/MessageCommand"
 import { RoleReactionCommand } from "./admin/RoleReactionCommand"
@@ -18,48 +18,33 @@ export default class CommandManager {
 
     constructor(private core: Core) {
         this.commandsInit()
-        // this.newCommandsInit()
+        this.registerCommands()
     }
 
-    async newCommandsInit() {
-        const rest = new REST({ version: "10" }).setToken(
-            this.core.configManager.botToken,
-        )
+    async registerCommands() {
+        const rest = new REST({ version: "10" }).setToken(process.env.BOT_TOKEN)
 
         try {
             console.log("Started refreshing application (/) commands.")
 
-            await rest.put(Routes.applicationCommands("667447976301428757"), {
-                body: this.commands.map(({ name, description }) => ({
-                    name,
-                    description,
-                })),
-            })
+            const data = await rest.put(
+                Routes.applicationCommands(process.env.CLIENT_ID),
+                {
+                    body: this.commands.map(({ name, description }) => ({
+                        name,
+                        description,
+                    })),
+                },
+            )
 
-            console.log("Successfully reloaded application (/) commands.")
+            console.log(
+                `Successfully reloaded ${
+                    (<any[]>data).length
+                } application (/) commands.`,
+            )
         } catch (error) {
             console.error(error)
         }
-
-        this.core.client.on("interactionCreate", async (interaction) => {
-            if (!interaction.isChatInputCommand()) return
-
-            if (interaction.commandName === "ping") {
-                await interaction.reply("Pong!")
-            }
-
-            const command = this.getCommand(interaction.commandName)
-
-            if (command) {
-                // if (!this.checkPermissions(command, interaction.user.id))
-                //     return await interaction.reply(
-                //         "У вас нет прав для выполнения этой команды!",
-                //     )
-                // command.run(interaction, args)
-
-                await interaction.reply("Pong!")
-            } else await interaction.reply("Команда не найдена!")
-        })
     }
 
     getCommands() {
@@ -67,10 +52,6 @@ export default class CommandManager {
     }
 
     commandsInit(): void {
-        this.core.client.on("messageCreate", (message) => {
-            this.executeCommand(message)
-        })
-
         this.registerCommand(new HelpCommand(this.core))
         this.registerCommand(new MessageCommand(this.core))
         this.registerCommand(new RoleReactionCommand(this.core))
@@ -79,6 +60,16 @@ export default class CommandManager {
         this.registerCommand(new StopCommand(this.core))
         this.registerCommand(new PlaylistCommand(this.core))
         this.registerCommand(new PlayNextCommand(this.core))
+
+        // Deprecated
+        this.core.client.on("messageCreate", (message) => {
+            this.executeCommand(message)
+        })
+
+        // New
+        this.core.client.on("interactionCreate", async (interaction) => {
+            this.newExecuteCommand(interaction)
+        })
     }
 
     registerCommand(command: Command): void {
@@ -111,7 +102,7 @@ export default class CommandManager {
         } else return true
     }
 
-    executeCommand(message: Message): any {
+    executeCommand(message: Message) {
         const prefix = this.core.configManager.getConfig().prefix
 
         if (message.author.bot) return
@@ -128,5 +119,27 @@ export default class CommandManager {
                 )
             command.run(message, args)
         } else message.channel.send("Команда не найдена!")
+    }
+
+    async newExecuteCommand(interaction: Interaction) {
+        if (!interaction.isChatInputCommand()) return
+
+        const command = this.getCommand(interaction.commandName)
+
+        if (!command) {
+            return await interaction.reply({
+                content: "Команда не найдена!",
+                ephemeral: true,
+            })
+        }
+
+        if (!this.checkPermissions(command, interaction.user.id)) {
+            return await interaction.reply({
+                content: "У вас нет прав для выполнения этой команды!",
+                ephemeral: true,
+            })
+        }
+
+        command.execute(interaction)
     }
 }

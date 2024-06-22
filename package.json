@@ -4,18 +4,19 @@
     "description": "Yet another bot for Discord",
     "main": "dist/index.js",
     "scripts": {
-        "dev": "concurrently -r \"tsup --watch\" \"nodemon .\"",
+        "dev": "concurrently -r \"tsup --sourcemap --watch\" \"nodemon .\"",
         "build": "tsup",
         "start:node": "node .",
         "start": "pm2 start dist/index.js --name=bot -o logs/bot.log -e logs/error.log --log-date-format \"DD-MM-YYYY HH:mm:ss\"",
         "deploy": "npm i && npm run build && pm2 delete -s bot || ':' && npm run start",
         "prettier": "prettier --write src",
         "lint": "eslint . --ext .ts",
-        "lint:fix": "eslint . --ext .ts --fix"
+        "lint:fix": "eslint . --ext .ts --fix",
+        "typecheck": "tsc --noEmit"
     },
     "repository": {
         "type": "git",
-        "url": "git+https://gitlab.com/JoCat/manaka-bot.git"
+        "url": "git+https://github.com/JoCat/manaka-bot.git"
     },
     "keywords": [
         "discord",
@@ -24,34 +25,35 @@
     "author": "JoCat",
     "license": "MIT",
     "bugs": {
-        "url": "https://gitlab.com/JoCat/manaka-bot/issues"
+        "url": "https://github.com/JoCat/manaka-bot/issues"
     },
-    "homepage": "https://gitlab.com/JoCat/manaka-bot#readme",
+    "homepage": "https://github.com/JoCat/manaka-bot#readme",
     "dependencies": {
         "@discordjs/opus": "^0.9.0",
-        "@discordjs/voice": "^0.16.0",
-        "bufferutil": "^4.0.6",
-        "discord.js": "^14.3.0",
-        "dotenv": "^16.0.0",
+        "@discordjs/voice": "^0.17.0",
+        "bufferutil": "^4.0.8",
+        "discord.js": "^14.14.1",
+        "dotenv": "^16.3.1",
         "erlpack": "github:discord/erlpack",
-        "ffmpeg-static": "^5.0.0",
-        "libsodium-wrappers": "^0.7.11",
-        "play-dl": "^1.9.4",
+        "ffmpeg-static": "^5.2.0",
+        "libsodium-wrappers": "^0.7.13",
+        "play-dl": "^1.9.7",
+        "source-map-support": "^0.5.21",
         "utf-8-validate": "^6.0.3",
-        "zlib-sync": "^0.1.7"
+        "zlib-sync": "^0.1.9"
     },
     "devDependencies": {
-        "@types/node": "^18.16.16",
-        "@typescript-eslint/eslint-plugin": "^6.4.1",
-        "@typescript-eslint/parser": "^6.4.1",
-        "concurrently": "^8.2.1",
-        "eslint": "^8.13.0",
+        "@types/node": "^20.14.7",
+        "@typescript-eslint/eslint-plugin": "^7.13.1",
+        "@typescript-eslint/parser": "^7.13.1",
+        "concurrently": "^8.2.2",
+        "eslint": "^8.55.0",
         "import-sort-style-module": "^6.0.0",
-        "nodemon": "^3.0.1",
-        "prettier": "^3.0.2",
+        "nodemon": "^3.0.2",
+        "prettier": "^3.1.0",
         "prettier-plugin-import-sort": "0.0.7",
-        "tsup": "^7.2.0",
-        "typescript": "^5.1.3"
+        "tsup": "^8.1.0",
+        "typescript": "^5.3.3"
     },
     "importSort": {
         ".ts": {

@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "module": "CommonJS",
-        "target": "ES2017",
+        "target": "ES2022",
         "moduleResolution": "Node",
         "removeComments": true,
         "sourceMap": true,

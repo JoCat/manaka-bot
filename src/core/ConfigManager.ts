@@ -1,7 +1,5 @@
+import "dotenv/config"
 import { ColorResolvable } from "discord.js"
-import dotenv from "dotenv"
-
-dotenv.config()
 
 export default class ConfigManager {
     private config: BotConfig

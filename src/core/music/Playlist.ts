@@ -17,7 +17,7 @@ import { playlist_info, stream, validate, video_basic_info } from "play-dl"
 
 // Я начал переписывать и чёт заебался XD
 
-class Playlist extends EventEmitter {
+class Playlist extends EventEmitter implements IPlaylist {
     private connection: VoiceConnection
     private player = createAudioPlayer({
         behaviors: {
@@ -46,7 +46,7 @@ class Playlist extends EventEmitter {
     public async addTrack(
         link: string,
         message: Message,
-        next = false
+        next = false,
     ): Promise<any> {
         const songs = await this.getSongsData(link)
 
@@ -125,7 +125,7 @@ class Playlist extends EventEmitter {
                         await stream(song.url, {
                             discordPlayerCompatibility: true,
                         })
-                    ).stream
+                    ).stream,
                 )
 
             case "raw":
@@ -175,7 +175,7 @@ class Playlist extends EventEmitter {
     }
 }
 
-declare interface Playlist {
+declare interface IPlaylist {
     on(event: "empty", listener: () => void): this
     once(event: "empty", listener: () => void): this
     addListener(event: "empty", listener: () => void): this

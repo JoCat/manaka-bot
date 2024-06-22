@@ -29,12 +29,10 @@ export default class Core {
         this.client.on("ready", () => {
             this.eventsManager = new EventsManager(this)
 
-            if (!this.configManager.dev) {
-                this.client.user.setActivity(
-                    `${this.configManager.getConfig().prefix} help`,
-                    { type: ActivityType.Watching },
-                )
-            }
+            this.client.user.setActivity(
+                "/help | " + this.client.guilds.cache.size + " Servers",
+                { type: ActivityType.Watching },
+            )
             console.log("Bot started")
         })
         this.client.login(this.configManager.botToken)
