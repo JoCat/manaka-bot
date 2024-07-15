@@ -4,7 +4,7 @@
     "description": "Yet another bot for Discord",
     "main": "dist/index.js",
     "scripts": {
-        "dev": "concurrently -r \"tsup --sourcemap --watch\" \"nodemon .\"",
+        "dev": "concurrently -r \"tsup --sourcemap --watch\" \"nodemon . --watch dist\"",
         "build": "tsup",
         "start:node": "node .",
         "start": "pm2 start dist/index.js --name=bot -o logs/bot.log -e logs/error.log --log-date-format \"DD-MM-YYYY HH:mm:ss\"",

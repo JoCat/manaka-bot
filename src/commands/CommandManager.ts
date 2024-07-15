@@ -40,10 +40,9 @@ export default class CommandManager {
             const data = await rest.put(
                 Routes.applicationCommands(process.env.CLIENT_ID),
                 {
-                    body: this.commands.map(({ name, description }) => ({
-                        name,
-                        description,
-                    })),
+                    body: this.commands
+                        .filter((command) => command.commandData)
+                        .map((command) => command.commandData.toJSON()),
                 },
             )
 
