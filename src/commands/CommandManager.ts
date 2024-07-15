@@ -1,5 +1,14 @@
 import Core from "core/Core"
-import { Collection, Interaction, Message, REST, Routes } from "discord.js"
+import {
+    CacheType,
+    Collection,
+    GuildMember,
+    Interaction,
+    Message,
+    PermissionsBitField,
+    REST,
+    Routes,
+} from "discord.js"
 
 import { MessageCommand } from "./admin/MessageCommand"
 import { RoleReactionCommand } from "./admin/RoleReactionCommand"
@@ -11,6 +20,7 @@ import { PlayNextCommand } from "./music/PlayNextCommand"
 import { SkipCommand } from "./music/SkipCommand"
 import { StopCommand } from "./music/StopCommand"
 import { availableChannelTypes } from "core/helpers/Utils"
+import { VoiceRoomCommand } from "./admin/VoiceRoomCommand"
 
 export default class CommandManager {
     private commands: Collection<string, Command> = new Collection()
@@ -60,6 +70,7 @@ export default class CommandManager {
         this.registerCommand(new StopCommand(this.core))
         this.registerCommand(new PlaylistCommand(this.core))
         this.registerCommand(new PlayNextCommand(this.core))
+        this.registerCommand(new VoiceRoomCommand(this.core))
 
         // Deprecated
         this.core.client.on("messageCreate", (message) => {
@@ -88,15 +99,15 @@ export default class CommandManager {
             return this.commands.get(this.commandAliases.get(commandName))
     }
 
-    // TODO Rework
-    checkPermissions(command: Command, userID: string): boolean {
+    checkPermissions(command: Command, user: GuildMember): boolean {
         if (command.category === CommandCategory.ADMIN) {
             let allowed = false
 
-            if (userID === "199231799124164608") allowed = true
-            // if (checkPermission('admin', message.member)) {
-            //     allowed = true;
-            // }
+            if (
+                user.id === user.guild.ownerId ||
+                user.permissions.has(PermissionsBitField.Flags.Administrator)
+            )
+                allowed = true
 
             return allowed
         } else return true
@@ -113,7 +124,7 @@ export default class CommandManager {
         const command = this.getCommand(args.shift().toLowerCase())
 
         if (command) {
-            if (!this.checkPermissions(command, message.member.id))
+            if (!this.checkPermissions(command, message.member))
                 return message.channel.send(
                     "У вас нет прав для выполнения этой команды!",
                 )
@@ -121,7 +132,7 @@ export default class CommandManager {
         } else message.channel.send("Команда не найдена!")
     }
 
-    async newExecuteCommand(interaction: Interaction) {
+    async newExecuteCommand(interaction: Interaction<CacheType>) {
         if (!interaction.isChatInputCommand()) return
 
         const command = this.getCommand(interaction.commandName)
@@ -133,7 +144,7 @@ export default class CommandManager {
             })
         }
 
-        if (!this.checkPermissions(command, interaction.user.id)) {
+        if (!this.checkPermissions(command, <GuildMember>interaction.member)) {
             return await interaction.reply({
                 content: "У вас нет прав для выполнения этой команды!",
                 ephemeral: true,

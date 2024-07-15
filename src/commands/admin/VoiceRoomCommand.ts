@@ -11,14 +11,10 @@ export class VoiceRoomCommand extends Command {
     name = "voiceroom"
     category = CommandCategory.ADMIN
     description = "добавляет канал в список для создания голосовых комнат"
-    usage = ["[тег/id канала]"]
-    aliases = ["vr"]
 
     commandData = new SlashCommandBuilder()
-        .setName("voiceroom")
-        .setDescription(
-            "добавляет канал в список для создания голосовых комнат",
-        )
+        .setName(this.name)
+        .setDescription(this.description)
         .addStringOption((option) =>
             option
                 .setName("channel")
