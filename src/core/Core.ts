@@ -24,7 +24,7 @@ export default class Core {
     eventsManager: EventsManager
 
     constructor() {
-        new VoiceRooms(this.client)
+        new VoiceRooms(this)
 
         this.client.on("ready", () => {
             this.eventsManager = new EventsManager(this)

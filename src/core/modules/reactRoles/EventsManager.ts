@@ -10,7 +10,7 @@ export default class EventsManager {
 
     constructor(private core: Core) {
         core.jsonDBManager
-            .getAllData("events")
+            .getData("events")
             .forEach(({ messageID, roleID, emoji }: EventHandler) => {
                 this.loadEvent(messageID, roleID, emoji)
             })

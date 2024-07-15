@@ -43,11 +43,7 @@ export default class JsonDBManager {
         this.saveDB()
     }
 
-    public getData(tableName: string, id: number): Entry {
-        return this.getTable(tableName).entries.find((e) => e.id === id)
-    }
-
-    public getAllData(tableName: string): Entry[] {
+    public getData(tableName: string): Entry[] {
         return this.getTable(tableName).entries
     }
 
@@ -72,4 +68,4 @@ interface Table {
     entries: Entry[]
 }
 
-type Entry = any
+type Entry = Record<string, any>

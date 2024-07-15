@@ -1,14 +1,17 @@
-import { ChannelType, Client, VoiceChannel, VoiceState } from "discord.js"
+import Core from "core/Core"
+import { ChannelType, VoiceChannel, VoiceState } from "discord.js"
 
 export class VoiceRooms {
-    constructor(private client: Client) {
-        client.on("voiceStateUpdate", (_, after: VoiceState) =>
+    constructor(private core: Core) {
+        core.client.on("voiceStateUpdate", (_, after: VoiceState) =>
             this.voiceStateUpdate(after),
         )
     }
 
     private async voiceStateUpdate(state: VoiceState): Promise<void> {
-        const voiceChannels = ["741028100317642802"] // TODO вынести в бд + команда
+        const voiceChannels = this.core.jsonDBManager
+            .getData("voiceRooms")
+            .map((voiceRoom) => voiceRoom.channel)
 
         if (voiceChannels.includes(state.channelId)) {
             state.guild.channels
@@ -28,7 +31,7 @@ export class VoiceRooms {
         }
 
         // Некоторая магия
-        this.client.channels.cache
+        this.core.client.channels.cache
             .filter((channel) => voiceChannels.includes(channel.id))
             .forEach((channel: VoiceChannel) =>
                 channel.parent.children.cache

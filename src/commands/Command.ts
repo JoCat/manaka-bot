@@ -4,6 +4,7 @@ import {
     ChatInputCommandInteraction,
     Message,
     SlashCommandBuilder,
+    SlashCommandOptionsOnlyBuilder,
 } from "discord.js"
 
 export abstract class Command {
@@ -16,11 +17,14 @@ export abstract class Command {
 
     constructor(protected core: Core) {}
 
+    /**
+     * @deprecated
+     */
     abstract run(message: Message, args: string[]): any
 
     // New features
 
-    readonly commandData: SlashCommandBuilder
+    readonly commandData: SlashCommandBuilder | SlashCommandOptionsOnlyBuilder
 
     //TODO Temp
     execute(interaction: ChatInputCommandInteraction<CacheType>): any {
