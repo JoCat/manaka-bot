@@ -80,7 +80,7 @@ export default class EventsManager {
     public generateToken(messageID: string, emoji: DiscordEmoji): string {
         return crypto
             .createHash("md5")
-            .update(messageID + emoji.id + emoji.name)
+            .update(messageID + (emoji.id || "") + (emoji.name || ""))
             .digest("hex")
     }
 
