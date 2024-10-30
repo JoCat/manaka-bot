@@ -10,8 +10,8 @@
         "start": "pm2 start dist/index.js --name=bot -o logs/bot.log -e logs/error.log --log-date-format \"DD-MM-YYYY HH:mm:ss\"",
         "deploy": "npm i && npm run build && pm2 delete -s bot || ':' && npm run start",
         "prettier": "prettier --write src",
-        "lint": "eslint . --ext .ts",
-        "lint:fix": "eslint . --ext .ts --fix",
+        "lint": "eslint .",
+        "lint:fix": "eslint . --fix",
         "typecheck": "tsc --noEmit"
     },
     "repository": {
@@ -32,28 +32,29 @@
         "@discordjs/opus": "^0.9.0",
         "@discordjs/voice": "^0.17.0",
         "bufferutil": "^4.0.8",
-        "discord.js": "^14.14.1",
-        "dotenv": "^16.3.1",
+        "discord.js": "^14.16.3",
+        "dotenv": "^16.4.5",
         "erlpack": "github:discord/erlpack",
         "ffmpeg-static": "^5.2.0",
-        "libsodium-wrappers": "^0.7.13",
+        "libsodium-wrappers": "^0.7.15",
         "play-dl": "^1.9.7",
         "source-map-support": "^0.5.21",
-        "utf-8-validate": "^6.0.3",
+        "utf-8-validate": "^6.0.4",
         "zlib-sync": "^0.1.9"
     },
     "devDependencies": {
-        "@types/node": "^20.14.7",
-        "@typescript-eslint/eslint-plugin": "^7.13.1",
-        "@typescript-eslint/parser": "^7.13.1",
-        "concurrently": "^8.2.2",
-        "eslint": "^8.55.0",
+        "@eslint/js": "^9.13.0",
+        "@types/node": "^22.8.4",
+        "concurrently": "^9.0.1",
+        "eslint": "^9.13.0",
+        "globals": "^15.11.0",
         "import-sort-style-module": "^6.0.0",
-        "nodemon": "^3.0.2",
-        "prettier": "^3.1.0",
+        "nodemon": "^3.1.7",
+        "prettier": "^3.3.3",
         "prettier-plugin-import-sort": "0.0.7",
-        "tsup": "^8.1.0",
-        "typescript": "^5.3.3"
+        "tsup": "^8.3.5",
+        "typescript": "^5.6.3",
+        "typescript-eslint": "^8.12.2"
     },
     "importSort": {
         ".ts": {
