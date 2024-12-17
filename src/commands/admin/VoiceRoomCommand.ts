@@ -2,11 +2,11 @@ import {
     CacheType,
     ChannelType,
     ChatInputCommandInteraction,
-    Message,
     SlashCommandBuilder,
 } from "discord.js"
 
 import { Command, CommandCategory } from "../Command"
+import { Message } from "commands/CommandManager"
 
 export class VoiceRoomCommand extends Command {
     name = "voiceroom"

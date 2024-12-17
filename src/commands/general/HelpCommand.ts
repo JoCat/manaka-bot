@@ -1,6 +1,7 @@
-import { EmbedBuilder, Message } from "discord.js"
+import { EmbedBuilder } from "discord.js"
 
 import { Command, CommandCategory } from "../Command"
+import { Message } from "commands/CommandManager"
 
 export class HelpCommand extends Command {
     name = "help"

@@ -1,7 +1,8 @@
-import { EmbedBuilder, Message, TextChannel, parseEmoji } from "discord.js"
+import { EmbedBuilder, TextChannel, parseEmoji } from "discord.js"
 
 import { findMessage } from "../../core/helpers/Utils"
 import { Command, CommandCategory } from "../Command"
+import { Message } from "commands/CommandManager"
 
 export class RoleReactionCommand extends Command {
     name = "role-reaction"
@@ -10,7 +11,7 @@ export class RoleReactionCommand extends Command {
     usage = ["add [id-сообщения] [id-роли] [emoji]", "remove [token]", "list"]
     aliases = ["rr"]
 
-    async run(message: Message, [method, ...args]: string[]): Promise<Message> {
+    async run(message: Message, [method, ...args]: string[]) {
         if (method === undefined)
             return message.channel.send("**Ошибка при вводе команды!**")
 
@@ -20,59 +21,58 @@ export class RoleReactionCommand extends Command {
                     const [messageID, roleID, emoji] = args
                     if (messageID === undefined)
                         return message.channel.send(
-                            "**Ошибка!** Не указан `id` сообщения!"
+                            "**Ошибка!** Не указан `id` сообщения!",
                         )
                     if (roleID === undefined)
                         return message.channel.send(
-                            "**Ошибка!** Не указан `id` роли!"
+                            "**Ошибка!** Не указан `id` роли!",
                         )
                     if (emoji === undefined)
                         return message.channel.send(
-                            "**Ошибка!** Не указан Emoji!"
+                            "**Ошибка!** Не указан Emoji!",
                         )
 
                     const parsedEmoji = parseEmoji(emoji)
                     if (parsedEmoji === null)
                         return message.channel.send(
-                            "**Ошибка!** Указан некорректный Emoji!"
+                            "**Ошибка!** Указан некорректный Emoji!",
                         )
 
                     const token = this.core.eventsManager.generateToken(
                         messageID,
-                        parsedEmoji
+                        parsedEmoji,
                     )
                     if (this.core.eventsManager.hasEvent(token))
                         return message.channel.send(
-                            "**Ошибка!** Событие на данном сообщении с таким же эмодзи уже существует!"
+                            "**Ошибка!** Событие на данном сообщении с таким же эмодзи уже существует!",
                         )
 
-                    const waitMsg = await message.channel.send(
-                        "Поиск сообщения..."
-                    )
+                    const waitMsg =
+                        await message.channel.send("Поиск сообщения...")
                     /* Долгая хрень */
                     const msg = await findMessage(
                         message.channel as TextChannel,
-                        messageID
+                        messageID,
                     )
                     if (!msg)
                         return waitMsg.edit(
-                            "**Ошибка!** Сообщение в данном гилде не найдено!"
+                            "**Ошибка!** Сообщение в данном гилде не найдено!",
                         )
                     try {
                         await msg.react(
                             parsedEmoji.id == null
                                 ? parsedEmoji.name
-                                : parsedEmoji.id
+                                : parsedEmoji.id,
                         )
                     } catch {
                         return waitMsg.edit(
-                            "Ошибка при установке реакции на сообщение"
+                            "Ошибка при установке реакции на сообщение",
                         )
                     }
                     this.core.eventsManager.addEventListener(
                         messageID,
                         roleID,
-                        parsedEmoji
+                        parsedEmoji,
                     )
                     waitMsg.edit(`Уникальный токен события: \`${token}\``)
                 }
@@ -81,7 +81,7 @@ export class RoleReactionCommand extends Command {
             case "remove":
                 if (args[0] === undefined)
                     return message.channel.send(
-                        "**Ошибка!** Не указан `token` события!"
+                        "**Ошибка!** Не указан `token` события!",
                     )
                 if (this.core.eventsManager.removeEventListener(args[0]))
                     message.channel.send("Событие удалёно")
@@ -98,10 +98,10 @@ export class RoleReactionCommand extends Command {
                                 event.emoji.id == null
                                     ? event.emoji.name
                                     : this.core.client.emojis.cache.get(
-                                          event.emoji.id
+                                          event.emoji.id,
                                       )
                             list.push(
-                                `Событие: \`${token}\`, Сообщение: \`${event.messageID}\`, Роль: <@&${event.roleID}>, Эмодзи: ${emoji}`
+                                `Событие: \`${token}\`, Сообщение: \`${event.messageID}\`, Роль: <@&${event.roleID}>, Эмодзи: ${emoji}`,
                             )
                         })
                     if (list.length === 0) list.push("*Список пуст*")
@@ -109,7 +109,7 @@ export class RoleReactionCommand extends Command {
                         embeds: [
                             new EmbedBuilder()
                                 .setColor(
-                                    this.core.configManager.getConfig().color
+                                    this.core.configManager.getConfig().color,
                                 )
                                 .setDescription(list.join("\n"))
                                 .setTitle("Список событий")
@@ -125,7 +125,7 @@ export class RoleReactionCommand extends Command {
 
             default:
                 message.channel.send(
-                    `**Ошибка!** Подкоманда \`${method}\` не найдена!`
+                    `**Ошибка!** Подкоманда \`${method}\` не найдена!`,
                 )
                 break
         }

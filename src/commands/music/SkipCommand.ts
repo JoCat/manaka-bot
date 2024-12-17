@@ -1,5 +1,4 @@
-import { Message } from "discord.js"
-
+import { Message } from "commands/CommandManager"
 import { Command, CommandCategory } from "../Command"
 
 export class SkipCommand extends Command {

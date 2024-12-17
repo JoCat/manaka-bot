@@ -12,8 +12,9 @@ import {
     joinVoiceChannel,
 } from "@discordjs/voice"
 import Core from "core/Core"
-import { EmbedBuilder, Message, TextChannel } from "discord.js"
+import { EmbedBuilder, TextChannel } from "discord.js"
 import { playlist_info, stream, validate, video_basic_info } from "play-dl"
+import { Message } from "commands/CommandManager"
 
 // Я начал переписывать и чёт заебался XD
 

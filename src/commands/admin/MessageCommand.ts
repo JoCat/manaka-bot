@@ -1,7 +1,8 @@
-import { EmbedBuilder, Message, TextChannel } from "discord.js"
+import { EmbedBuilder, TextChannel } from "discord.js"
 
 import { findMessage } from "../../core/helpers/Utils"
 import { Command, CommandCategory } from "../Command"
+import { Message } from "commands/CommandManager"
 
 export class MessageCommand extends Command {
     name = "message"
@@ -22,19 +23,19 @@ export class MessageCommand extends Command {
             case "get":
                 if (args[0] === undefined)
                     return message.channel.send(
-                        "**Ошибка!** Не указан `id` сообщения!"
+                        "**Ошибка!** Не указан `id` сообщения!",
                     )
                 try {
                     const msg = await findMessage(
                         message.channel as TextChannel,
-                        args[0]
+                        args[0],
                     )
                     // TODO придумать что-то с Embed сообщениями
                     message.channel.send({
                         embeds: [
                             new EmbedBuilder()
                                 .setColor(
-                                    this.core.configManager.getConfig().color
+                                    this.core.configManager.getConfig().color,
                                 )
                                 .setDescription(msg.content)
                                 .setAuthor({
@@ -48,7 +49,7 @@ export class MessageCommand extends Command {
                     if (error.code === 10008)
                         return message.channel.send("Сообщение не найдено")
                     message.channel.send(
-                        "При выполнении команды произошла ошибка"
+                        "При выполнении команды произошла ошибка",
                     )
                     console.error(error)
                 }
@@ -58,7 +59,7 @@ export class MessageCommand extends Command {
             case "send":
                 if (args[0] === undefined)
                     return message.channel.send(
-                        "**Ошибка!** Сообщение не может быть пустым!"
+                        "**Ошибка!** Сообщение не может быть пустым!",
                     )
                 message.channel.send(message.content.match(/send (.+)/s)[1])
                 message.delete()
@@ -67,25 +68,25 @@ export class MessageCommand extends Command {
             case "edit":
                 if (args[0] === undefined)
                     return message.channel.send(
-                        "**Ошибка!** Не указан `id` сообщения!"
+                        "**Ошибка!** Не указан `id` сообщения!",
                     )
                 if (args[1] === undefined)
                     return message.channel.send(
-                        "**Ошибка!** Не указан текст сообщения!"
+                        "**Ошибка!** Не указан текст сообщения!",
                     )
                 try {
                     const msg = await findMessage(
                         message.channel as TextChannel,
-                        args[0]
+                        args[0],
                     )
                     msg.edit(message.content.match(/edit ([\d]+) (.+)/s)[2])
                 } catch (error) {
                     if (error.code === 50005)
                         return message.channel.send(
-                            "**Ошибка!** Нельзя редактировать сообщения других пользоветелей!"
+                            "**Ошибка!** Нельзя редактировать сообщения других пользоветелей!",
                         )
                     message.channel.send(
-                        "При выполнении команды произошла ошибка"
+                        "При выполнении команды произошла ошибка",
                     )
                     console.error(error)
                 }
@@ -94,7 +95,7 @@ export class MessageCommand extends Command {
 
             default:
                 message.channel.send(
-                    `**Ошибка!** Подкоманда \`${method}\` не найдена!`
+                    `**Ошибка!** Подкоманда \`${method}\` не найдена!`,
                 )
                 message.delete()
                 break

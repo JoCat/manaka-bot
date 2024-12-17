@@ -4,7 +4,8 @@ import {
     Collection,
     GuildMember,
     Interaction,
-    Message,
+    Message as DiscordMessage,
+    OmitPartialGroupDMChannel,
     PermissionsBitField,
     REST,
     Routes,
@@ -21,6 +22,8 @@ import { SkipCommand } from "./music/SkipCommand"
 import { StopCommand } from "./music/StopCommand"
 import { availableChannelTypes } from "core/helpers/Utils"
 import { VoiceRoomCommand } from "./admin/VoiceRoomCommand"
+
+export type Message = OmitPartialGroupDMChannel<DiscordMessage<boolean>>
 
 export default class CommandManager {
     private commands: Collection<string, Command> = new Collection()
