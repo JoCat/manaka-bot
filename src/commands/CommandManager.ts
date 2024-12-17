@@ -22,6 +22,7 @@ import { SkipCommand } from "./music/SkipCommand"
 import { StopCommand } from "./music/StopCommand"
 import { availableChannelTypes } from "core/helpers/Utils"
 import { VoiceRoomCommand } from "./admin/VoiceRoomCommand"
+import { detectAsciiArt } from "core/helpers/antiASCIIArt"
 
 export type Message = OmitPartialGroupDMChannel<DiscordMessage<boolean>>
 
@@ -116,6 +117,8 @@ export default class CommandManager {
     }
 
     executeCommand(message: Message) {
+        if (this.asciiArtFilter(message)) return
+
         const prefix = this.core.configManager.getConfig().prefix
 
         if (message.author.bot) return
@@ -154,5 +157,12 @@ export default class CommandManager {
         }
 
         command.execute(interaction)
+    }
+
+    asciiArtFilter(message: Message) {
+        if (!["742023613896589312"].includes(message.channelId)) return false
+        const isAsciiArt = detectAsciiArt(message.content)
+        if (isAsciiArt) message.delete()
+        return isAsciiArt
     }
 }
