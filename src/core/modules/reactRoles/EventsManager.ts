@@ -45,18 +45,13 @@ export default class EventsManager {
                 this.generateToken(data.d.message_id, data.d.emoji),
             )
             if (event === undefined) return
-            event.handler(data)
+            event.handler(core.client.guilds, data)
         })
     }
 
     private loadEvent(messageID: string, roleID: string, emoji: DiscordEmoji) {
         const token = this.generateToken(messageID, emoji)
-        const handler = new EventHandler(
-            this.core.client.guilds,
-            messageID,
-            roleID,
-            emoji,
-        )
+        const handler = new EventHandler(messageID, roleID, emoji)
         this.events.set(token, handler)
         return handler
     }

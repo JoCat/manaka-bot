@@ -1,5 +1,5 @@
 import fs from "fs"
-import { join } from "path"
+import { dirname, join } from "path"
 
 // TODO Remove
 export default class JsonDBManager {
@@ -16,6 +16,7 @@ export default class JsonDBManager {
                 process.exit(1)
             }
         } else {
+            fs.mkdirSync(dirname(this.dbFile), { recursive: true })
             fs.writeFileSync(this.dbFile, "{}")
         }
     }

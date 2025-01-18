@@ -8,6 +8,5 @@ COPY dist ./dist
 RUN npm i --omit=dev
 
 ENV DEV=false
-ENV BOT_TOKEN=
 
 CMD [ "node", "." ]

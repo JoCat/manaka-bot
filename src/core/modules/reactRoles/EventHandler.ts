@@ -4,15 +4,14 @@ import { DiscordEmoji, RawDiscordReactionEvent } from "../../../types"
 
 export default class EventHandler {
     constructor(
-        private guilds: GuildManager,
         public messageID: string,
         public roleID: string,
         public emoji: DiscordEmoji,
     ) {}
 
-    async handler(data: RawDiscordReactionEvent): Promise<void> {
+    async handler(guildManager: GuildManager, data: RawDiscordReactionEvent) {
         let reactMember = await (
-            await this.guilds.fetch(data.d.guild_id)
+            await guildManager.fetch(data.d.guild_id)
         ).members.fetch(data.d.user_id)
         if (reactMember.user.bot) return
 

@@ -1,7 +1,8 @@
 import Playlist from "core/music/Playlist"
-import { ColorResolvable, EmbedBuilder, Message } from "discord.js"
+import { ColorResolvable, EmbedBuilder } from "discord.js"
 
 import { Command, CommandCategory } from "../Command"
+import { Message } from "commands/CommandManager"
 
 export class PlaylistCommand extends Command {
     name = "playlist"
@@ -17,7 +18,7 @@ export class PlaylistCommand extends Command {
             return message.channel.send("Плейлист пуст!")
 
         const serverPlaylist = this.core.musicManager.getPlaylist(
-            message.guild.id
+            message.guild.id,
         )
         const playlist = getTracks(serverPlaylist)
         const msg = await message.channel.send({
@@ -25,7 +26,7 @@ export class PlaylistCommand extends Command {
                 getEmbed(
                     playlist,
                     undefined,
-                    this.core.configManager.getConfig().color
+                    this.core.configManager.getConfig().color,
                 ),
             ],
         })
@@ -59,7 +60,7 @@ export class PlaylistCommand extends Command {
                     getEmbed(
                         playlist,
                         page,
-                        this.core.configManager.getConfig().color
+                        this.core.configManager.getConfig().color,
                     ),
                 ],
             })
@@ -73,7 +74,7 @@ function getTracks(serverPlaylist: Playlist, page = 0) {
         .slice(10 * page, (page + 1) * 10)
         .map(
             (song, i) =>
-                `**${1 + i + 10 * page}. [${song.title}](${song.url})**`
+                `**${1 + i + 10 * page}. [${song.title}](${song.url})**`,
         )
     return { songsCount: songs.length, playlist }
 }
@@ -81,7 +82,7 @@ function getTracks(serverPlaylist: Playlist, page = 0) {
 function getEmbed(
     { songsCount, playlist }: { songsCount: number; playlist: string[] },
     page = 0,
-    color: ColorResolvable
+    color: ColorResolvable,
 ) {
     return new EmbedBuilder()
         .setColor(color)
