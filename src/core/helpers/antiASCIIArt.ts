@@ -27,5 +27,5 @@ function hasAlignedLines(message: string): boolean {
 }
 
 export function detectAsciiArt(message: string): boolean {
-    return isAsciiArt(message) || hasAlignedLines(message)
+    return isAsciiArt(message) && hasAlignedLines(message)
 }
