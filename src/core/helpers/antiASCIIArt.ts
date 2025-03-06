@@ -5,7 +5,7 @@ function isAsciiArt(message: string): boolean {
     }
 
     // Регулярное выражение для проверки строк на наличие специальных символов
-    const artPattern = /[^\w\s]{3,}/ // 3+ специальных символов подряд
+    const artPattern = /[^\w\s]{3,}/u // 3+ специальных символов подряд
     const countArtLines = lines.filter((line) => artPattern.test(line)).length
 
     // Если большинство строк соответствуют шаблону, это может быть ASCII-арт

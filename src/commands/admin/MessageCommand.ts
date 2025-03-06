@@ -56,15 +56,6 @@ export class MessageCommand extends Command {
                 message.delete()
                 break
 
-            case "send":
-                if (args[0] === undefined)
-                    return message.channel.send(
-                        "**Ошибка!** Сообщение не может быть пустым!",
-                    )
-                message.channel.send(message.content.match(/send (.+)/s)[1])
-                message.delete()
-                break
-
             case "edit":
                 if (args[0] === undefined)
                     return message.channel.send(
