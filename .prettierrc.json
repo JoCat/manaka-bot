@@ -1,4 +1,8 @@
 {
     "semi": false,
-    "singleQuote": false
+    "singleQuote": false,
+    "plugins": ["@trivago/prettier-plugin-sort-imports"],
+    "importOrderParserPlugins": ["typescript", "decorators-legacy"],
+    "importOrder": ["<THIRD_PARTY_MODULES>", "^(core|commands)/(.*)$", "^[./]"],
+    "importOrderSeparation": true
 }

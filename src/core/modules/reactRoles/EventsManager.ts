@@ -2,8 +2,8 @@ import crypto from "crypto"
 
 import Core from "core/Core"
 
-import EventHandler from "./EventHandler"
 import { DiscordEmoji, RawDiscordReactionEvent } from "../../../types"
+import EventHandler from "./EventHandler"
 
 export default class EventsManager {
     private events: Map<string, EventHandler> = new Map()

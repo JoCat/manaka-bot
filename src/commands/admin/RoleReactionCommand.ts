@@ -1,8 +1,9 @@
 import { EmbedBuilder, TextChannel, parseEmoji } from "discord.js"
 
+import { Message } from "commands/CommandManager"
+
 import { findMessage } from "../../core/helpers/Utils"
 import { Command, CommandCategory } from "../Command"
-import { Message } from "commands/CommandManager"
 
 export class RoleReactionCommand extends Command {
     name = "role-reaction"

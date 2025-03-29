@@ -1,4 +1,3 @@
-import "dotenv/config"
 import { ColorResolvable } from "discord.js"
 
 export default class ConfigManager {

@@ -1,8 +1,9 @@
-import Playlist from "core/music/Playlist"
 import { ColorResolvable, EmbedBuilder } from "discord.js"
 
-import { Command, CommandCategory } from "../Command"
 import { Message } from "commands/CommandManager"
+import Playlist from "core/music/Playlist"
+
+import { Command, CommandCategory } from "../Command"
 
 export class PlaylistCommand extends Command {
     name = "playlist"

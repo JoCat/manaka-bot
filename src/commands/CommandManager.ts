@@ -1,4 +1,3 @@
-import Core from "core/Core"
 import {
     CacheType,
     Collection,
@@ -11,18 +10,20 @@ import {
     Routes,
 } from "discord.js"
 
+import Core from "core/Core"
+import { availableChannelTypes } from "core/helpers/Utils"
+import { detectAsciiArt } from "core/helpers/antiASCIIArt"
+
+import { Command, CommandCategory } from "./Command"
 import { MessageCommand } from "./admin/MessageCommand"
 import { RoleReactionCommand } from "./admin/RoleReactionCommand"
-import { Command, CommandCategory } from "./Command"
+import { VoiceRoomCommand } from "./admin/VoiceRoomCommand"
 import { HelpCommand } from "./general/HelpCommand"
 import { PlayCommand } from "./music/PlayCommand"
-import { PlaylistCommand } from "./music/PlaylistCommand"
 import { PlayNextCommand } from "./music/PlayNextCommand"
+import { PlaylistCommand } from "./music/PlaylistCommand"
 import { SkipCommand } from "./music/SkipCommand"
 import { StopCommand } from "./music/StopCommand"
-import { availableChannelTypes } from "core/helpers/Utils"
-import { VoiceRoomCommand } from "./admin/VoiceRoomCommand"
-import { detectAsciiArt } from "core/helpers/antiASCIIArt"
 
 export type Message = OmitPartialGroupDMChannel<DiscordMessage<boolean>>
 

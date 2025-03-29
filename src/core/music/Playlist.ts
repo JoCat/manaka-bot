@@ -1,7 +1,3 @@
-import { EventEmitter } from "events"
-import { createReadStream } from "fs"
-import { basename } from "path"
-
 import {
     AudioPlayerStatus,
     NoSubscriberBehavior,
@@ -11,10 +7,14 @@ import {
     createAudioResource,
     joinVoiceChannel,
 } from "@discordjs/voice"
-import Core from "core/Core"
 import { EmbedBuilder, TextChannel } from "discord.js"
+import { EventEmitter } from "events"
+import { createReadStream } from "fs"
+import { basename } from "path"
 import { playlist_info, stream, validate, video_basic_info } from "play-dl"
+
 import { Message } from "commands/CommandManager"
+import Core from "core/Core"
 
 // Я начал переписывать и чёт заебался XD
 

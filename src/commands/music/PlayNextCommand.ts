@@ -1,4 +1,5 @@
 import { Message } from "commands/CommandManager"
+
 import { Command, CommandCategory } from "../Command"
 
 export class PlayNextCommand extends Command {

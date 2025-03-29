@@ -2,10 +2,10 @@ import { ActivityType, Client, GatewayIntentBits } from "discord.js"
 
 import CommandManager from "./../commands/CommandManager"
 import ConfigManager from "./ConfigManager"
-import EventsManager from "./modules/reactRoles/EventsManager"
 import JsonDBManager from "./JsonDBManager"
-import MusicManager from "./music/MusicManager"
+import EventsManager from "./modules/reactRoles/EventsManager"
 import { VoiceRooms } from "./modules/voiceRooms"
+import MusicManager from "./music/MusicManager"
 
 export default class Core {
     client = new Client({

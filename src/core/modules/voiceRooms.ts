@@ -1,5 +1,6 @@
-import Core from "core/Core"
 import { ChannelType, VoiceChannel, VoiceState } from "discord.js"
+
+import Core from "core/Core"
 
 export class VoiceRooms {
     constructor(private core: Core) {

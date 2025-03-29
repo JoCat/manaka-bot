@@ -1,10 +1,12 @@
-import Core from "core/Core"
 import {
     CacheType,
     ChatInputCommandInteraction,
     SlashCommandBuilder,
     SlashCommandOptionsOnlyBuilder,
 } from "discord.js"
+
+import Core from "core/Core"
+
 import { Message } from "./CommandManager"
 
 export abstract class Command {

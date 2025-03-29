@@ -5,8 +5,9 @@ import {
     SlashCommandBuilder,
 } from "discord.js"
 
-import { Command, CommandCategory } from "../Command"
 import { Message } from "commands/CommandManager"
+
+import { Command, CommandCategory } from "../Command"
 
 export class VoiceRoomCommand extends Command {
     name = "voiceroom"
