@@ -22,14 +22,14 @@ export default class EventHandler {
             data.t === "MESSAGE_REACTION_ADD" &&
             !reactMember.roles.cache.has(this.roleID)
         ) {
-            reactMember.roles.add(this.roleID)
+            reactMember.roles.add(this.roleID).catch(console.error)
         }
 
         if (
             data.t === "MESSAGE_REACTION_REMOVE" &&
             reactMember.roles.cache.has(this.roleID)
         ) {
-            reactMember.roles.remove(this.roleID)
+            reactMember.roles.remove(this.roleID).catch(console.error)
         }
     }
 }

@@ -1,4 +1,9 @@
-import { ChannelType, Message, TextBasedChannel, TextChannel } from "discord.js"
+import {
+    ChannelType,
+    GuildTextBasedChannel,
+    Message,
+    TextBasedChannel,
+} from "discord.js"
 
 export const availableChannelTypes = [
     ChannelType.GuildText,
@@ -10,7 +15,7 @@ export const availableChannelTypes = [
 ]
 
 export async function findMessage(
-    textChannel: TextChannel,
+    textChannel: GuildTextBasedChannel,
     id: string,
 ): Promise<Message> {
     try {

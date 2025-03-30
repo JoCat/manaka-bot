@@ -31,7 +31,6 @@ export class HelpCommand extends Command {
             const data = []
 
             data.push(list(CommandCategory.GENERAL, "Основные"))
-            data.push(list(CommandCategory.MUSIC, "Музыкальные"))
 
             if (message.member.id === "199231799124164608") {
                 data.push(list(CommandCategory.ADMIN, "Админские"))

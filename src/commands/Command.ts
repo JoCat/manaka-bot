@@ -3,6 +3,7 @@ import {
     ChatInputCommandInteraction,
     SlashCommandBuilder,
     SlashCommandOptionsOnlyBuilder,
+    SlashCommandSubcommandsOnlyBuilder,
 } from "discord.js"
 
 import Core from "core/Core"
@@ -26,7 +27,10 @@ export abstract class Command {
 
     // New features
 
-    readonly commandData: SlashCommandBuilder | SlashCommandOptionsOnlyBuilder
+    readonly commandData:
+        | SlashCommandBuilder
+        | SlashCommandOptionsOnlyBuilder
+        | SlashCommandSubcommandsOnlyBuilder
 
     //TODO Temp
     execute(interaction: ChatInputCommandInteraction<CacheType>): any {

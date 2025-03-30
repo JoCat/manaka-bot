@@ -1,4 +1,9 @@
-import { EmbedBuilder, TextChannel, parseEmoji } from "discord.js"
+import {
+    ChatInputCommandInteraction,
+    EmbedBuilder,
+    SlashCommandBuilder,
+    parseEmoji,
+} from "discord.js"
 
 import { Message } from "commands/CommandManager"
 
@@ -12,123 +17,150 @@ export class RoleReactionCommand extends Command {
     usage = ["add [id-сообщения] [id-роли] [emoji]", "remove [token]", "list"]
     aliases = ["rr"]
 
-    async run(message: Message, [method, ...args]: string[]) {
-        if (method === undefined)
-            return message.channel.send("**Ошибка при вводе команды!**")
-
-        switch (method) {
-            case "add":
-                {
-                    const [messageID, roleID, emoji] = args
-                    if (messageID === undefined)
-                        return message.channel.send(
-                            "**Ошибка!** Не указан `id` сообщения!",
-                        )
-                    if (roleID === undefined)
-                        return message.channel.send(
-                            "**Ошибка!** Не указан `id` роли!",
-                        )
-                    if (emoji === undefined)
-                        return message.channel.send(
-                            "**Ошибка!** Не указан Emoji!",
-                        )
-
-                    const parsedEmoji = parseEmoji(emoji)
-                    if (parsedEmoji === null)
-                        return message.channel.send(
-                            "**Ошибка!** Указан некорректный Emoji!",
-                        )
-
-                    const token = this.core.eventsManager.generateToken(
-                        messageID,
-                        parsedEmoji,
-                    )
-                    if (this.core.eventsManager.hasEvent(token))
-                        return message.channel.send(
-                            "**Ошибка!** Событие на данном сообщении с таким же эмодзи уже существует!",
-                        )
-
-                    const waitMsg =
-                        await message.channel.send("Поиск сообщения...")
-                    /* Долгая хрень */
-                    const msg = await findMessage(
-                        message.channel as TextChannel,
-                        messageID,
-                    )
-                    if (!msg)
-                        return waitMsg.edit(
-                            "**Ошибка!** Сообщение в данном гилде не найдено!",
-                        )
-                    try {
-                        await msg.react(
-                            parsedEmoji.id == null
-                                ? parsedEmoji.name
-                                : parsedEmoji.id,
-                        )
-                    } catch {
-                        return waitMsg.edit(
-                            "Ошибка при установке реакции на сообщение",
-                        )
-                    }
-                    this.core.eventsManager.addEventListener(
-                        messageID,
-                        roleID,
-                        parsedEmoji,
-                    )
-                    waitMsg.edit(`Уникальный токен события: \`${token}\``)
-                }
-                break
-
-            case "remove":
-                if (args[0] === undefined)
-                    return message.channel.send(
-                        "**Ошибка!** Не указан `token` события!",
-                    )
-                if (this.core.eventsManager.removeEventListener(args[0]))
-                    message.channel.send("Событие удалёно")
-                else message.channel.send("**Ошибка!** Событие не найдено!")
-                break
-
-            case "list":
-                {
-                    const list = []
-                    this.core.eventsManager
-                        .getEvents()
-                        .forEach((event, token) => {
-                            const emoji =
-                                event.emoji.id == null
-                                    ? event.emoji.name
-                                    : this.core.client.emojis.cache.get(
-                                          event.emoji.id,
-                                      )
-                            list.push(
-                                `Событие: \`${token}\`, Сообщение: \`${event.messageID}\`, Роль: <@&${event.roleID}>, Эмодзи: ${emoji}`,
-                            )
-                        })
-                    if (list.length === 0) list.push("*Список пуст*")
-                    message.channel.send({
-                        embeds: [
-                            new EmbedBuilder()
-                                .setColor(
-                                    this.core.configManager.getConfig().color,
-                                )
-                                .setDescription(list.join("\n"))
-                                .setTitle("Список событий")
-                                .setTimestamp()
-                                .setFooter({
-                                    text: "Запросил " + message.author.tag,
-                                    iconURL: message.author.avatarURL(),
-                                }),
-                        ],
-                    })
-                }
-                break
-
-            default:
-                message.channel.send(
-                    `**Ошибка!** Подкоманда \`${method}\` не найдена!`,
+    commandData = new SlashCommandBuilder()
+        .setName(this.name)
+        .setDescription(this.description)
+        .addSubcommand((subcommand) =>
+            subcommand
+                .setName("add")
+                .setDescription("Добавить реакцию")
+                .addStringOption((option) =>
+                    option
+                        .setName("message-id")
+                        .setDescription("ID сообщения")
+                        .setRequired(true),
                 )
-                break
+                .addRoleOption((option) =>
+                    option
+                        .setName("role")
+                        .setDescription("Роль")
+                        .setRequired(true),
+                )
+                .addStringOption((option) =>
+                    option
+                        .setName("emoji")
+                        .setDescription("Эмодзи")
+                        .setRequired(true),
+                ),
+        )
+        .addSubcommand((subcommand) =>
+            subcommand
+                .setName("remove")
+                .setDescription("Удалить реакцию")
+                .addStringOption((option) =>
+                    option
+                        .setName("token")
+                        .setDescription("Токен реакции")
+                        .setRequired(true),
+                ),
+        )
+        .addSubcommand((subcommand) =>
+            subcommand.setName("list").setDescription("Вывести список реакций"),
+        )
+
+    async run(message: Message, [method]: string[]) {
+        if (method === undefined) {
+            return message.channel.send("**Ошибка при вводе команды!**")
         }
+
+        if (["add", "remove", "list"].includes(method)) {
+            return message.channel.send("Используйте /role-reaction " + method)
+        }
+
+        message.channel.send(`**Ошибка!** Подкоманда \`${method}\` не найдена!`)
+    }
+
+    execute(interaction: ChatInputCommandInteraction<"cached">) {
+        const method = interaction.options.getSubcommand()
+        this[method](interaction)
+    }
+
+    async add(interaction: ChatInputCommandInteraction<"cached">) {
+        const messageID = interaction.options.getString("message-id", true)
+        const roleID = interaction.options.getRole("role", true).id
+        const emoji = interaction.options.getString("emoji", true)
+
+        const parsedEmoji = parseEmoji(emoji)
+        if (parsedEmoji === null) {
+            return interaction.reply({
+                content: "**Ошибка!** Указан некорректный Emoji!",
+                ephemeral: true,
+            })
+        }
+
+        const token = this.core.eventsManager.generateToken(
+            messageID,
+            parsedEmoji,
+        )
+        if (this.core.eventsManager.hasEvent(token)) {
+            return interaction.reply({
+                content:
+                    "**Ошибка!** Событие на данном сообщении с таким же эмодзи уже существует!",
+                ephemeral: true,
+            })
+        }
+
+        interaction.reply({
+            content: "Поиск сообщения...",
+            ephemeral: true,
+        })
+
+        /* Долгая хрень */
+        const message = await findMessage(interaction.channel, messageID)
+        if (!message) {
+            return interaction.editReply(
+                "**Ошибка!** Сообщение в данном гилде не найдено!",
+            )
+        }
+
+        try {
+            await message.react(
+                parsedEmoji.id == null ? parsedEmoji.name : parsedEmoji.id,
+            )
+        } catch {
+            return interaction.editReply(
+                "Ошибка при установке реакции на сообщение",
+            )
+        }
+        this.core.eventsManager.addEventListener(messageID, roleID, parsedEmoji)
+        interaction.editReply(`Уникальный токен события: \`${token}\``)
+    }
+
+    remove(interaction: ChatInputCommandInteraction<"cached">) {
+        const token = interaction.options.getString("token", true)
+        if (this.core.eventsManager.removeEventListener(token)) {
+            interaction.reply({
+                content: "Событие удалено",
+                ephemeral: true,
+            })
+        } else {
+            interaction.reply({
+                content: "Событие не найдено",
+                ephemeral: true,
+            })
+        }
+    }
+
+    list(interaction: ChatInputCommandInteraction<"cached">) {
+        const list = []
+        this.core.eventsManager.getEvents().forEach((event, token) => {
+            const emoji =
+                event.emoji.id == null
+                    ? event.emoji.name
+                    : this.core.client.emojis.cache.get(event.emoji.id)
+            list.push(
+                `Событие: \`${token}\`, Сообщение: \`${event.messageID}\`, Роль: <@&${event.roleID}>, Эмодзи: ${emoji}`,
+            )
+        })
+        if (list.length === 0) list.push("*Список пуст*")
+        interaction.reply({
+            ephemeral: true,
+            embeds: [
+                new EmbedBuilder()
+                    .setColor(this.core.configManager.getConfig().color)
+                    .setDescription(list.join("\n"))
+                    .setTitle("Список событий"),
+            ],
+        })
     }
 }

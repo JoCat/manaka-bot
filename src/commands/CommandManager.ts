@@ -15,7 +15,6 @@ import { availableChannelTypes } from "core/helpers/Utils"
 import { detectAsciiArt } from "core/helpers/antiASCIIArt"
 
 import { Command, CommandCategory } from "./Command"
-import { MessageCommand } from "./admin/MessageCommand"
 import { RoleReactionCommand } from "./admin/RoleReactionCommand"
 import { VoiceRoomCommand } from "./admin/VoiceRoomCommand"
 import { HelpCommand } from "./general/HelpCommand"
@@ -62,7 +61,6 @@ export default class CommandManager {
 
     commandsInit(): void {
         this.registerCommand(new HelpCommand(this.core))
-        this.registerCommand(new MessageCommand(this.core))
         this.registerCommand(new RoleReactionCommand(this.core))
         this.registerCommand(new VoiceRoomCommand(this.core))
 

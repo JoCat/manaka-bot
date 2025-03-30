@@ -28,11 +28,13 @@ export default class Core {
             this.eventsManager.handle()
 
             this.client.user.setActivity(
-                "/help | " + this.client.guilds.cache.size + " Servers",
-                { type: ActivityType.Watching },
+                "Use /help | " + this.client.guilds.cache.size + " Servers",
+                { type: ActivityType.Custom },
             )
+
             console.log("Bot started")
         })
+
         this.client.login(this.configManager.botToken)
     }
 }
