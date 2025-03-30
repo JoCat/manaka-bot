@@ -40,5 +40,4 @@ export abstract class Command {
 export enum CommandCategory {
     ADMIN = "admin",
     GENERAL = "general",
-    MUSIC = "music",
 }

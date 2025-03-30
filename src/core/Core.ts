@@ -5,7 +5,6 @@ import ConfigManager from "./ConfigManager"
 import JsonDBManager from "./JsonDBManager"
 import EventsManager from "./modules/reactRoles/EventsManager"
 import { VoiceRooms } from "./modules/voiceRooms"
-import MusicManager from "./music/MusicManager"
 
 export default class Core {
     client = new Client({
@@ -20,14 +19,13 @@ export default class Core {
     configManager = new ConfigManager()
     commandsManager = new CommandManager(this)
     jsonDBManager = new JsonDBManager()
-    musicManager = new MusicManager(this)
-    eventsManager: EventsManager
+    eventsManager = new EventsManager(this)
 
     constructor() {
         new VoiceRooms(this)
 
         this.client.on("ready", () => {
-            this.eventsManager = new EventsManager(this)
+            this.eventsManager.handle()
 
             this.client.user.setActivity(
                 "/help | " + this.client.guilds.cache.size + " Servers",

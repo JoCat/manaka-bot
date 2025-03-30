@@ -14,7 +14,9 @@ export default class EventsManager {
             .forEach(({ messageID, roleID, emoji }: EventHandler) => {
                 this.loadEvent(messageID, roleID, emoji)
             })
+    }
 
+    public async handle() {
         // TODO New react logic
         // this.core.client.channels
         //     .fetch("741047839320178852")
@@ -32,7 +34,7 @@ export default class EventsManager {
         // core.client.on("messageReactionRemove", (msg, user) => {
         //     console.log(msg, user)
         // })
-        core.client.on("raw", (data: RawDiscordReactionEvent) => {
+        this.core.client.on("raw", (data: RawDiscordReactionEvent) => {
             if (
                 !["MESSAGE_REACTION_REMOVE", "MESSAGE_REACTION_ADD"].includes(
                     data.t,
@@ -45,7 +47,7 @@ export default class EventsManager {
                 this.generateToken(data.d.message_id, data.d.emoji),
             )
             if (event === undefined) return
-            event.handler(core.client.guilds, data)
+            event.handler(this.core.client.guilds, data)
         })
     }
 
