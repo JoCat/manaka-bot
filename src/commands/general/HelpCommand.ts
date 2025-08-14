@@ -1,6 +1,9 @@
-import { EmbedBuilder } from "discord.js"
-
-import { Message } from "commands/CommandManager"
+import {
+    CacheType,
+    ChatInputCommandInteraction,
+    EmbedBuilder,
+    SlashCommandBuilder,
+} from "discord.js"
 
 import { Command, CommandCategory } from "../Command"
 
@@ -12,18 +15,23 @@ export class HelpCommand extends Command {
     usage = ["", "[command name]"]
     aliases = ["h", "commands"]
 
-    run(message: Message, args: string[]): any {
-        const { prefix, color } = this.core.configManager.getConfig()
+    commandData = new SlashCommandBuilder()
+        .setName(this.name)
+        .setDescription(this.description)
+        .addStringOption((option) =>
+            option.setName("command").setDescription("название команды"),
+        )
 
-        if (!args.length) {
+    execute(interaction: ChatInputCommandInteraction<CacheType>) {
+        const commandName = interaction.options.getString("command")
+        const { color } = this.core.configManager.getConfig()
+
+        if (!commandName) {
             const list = (category: CommandCategory, categoryName: string) => {
                 const cmdList = this.core.commandsManager
                     .getCommands()
                     .filter((cmd) => cmd.category === category)
-                    .map(
-                        (cmd) =>
-                            `\`${prefix} ${cmd.name}\` – ${cmd.description}`,
-                    )
+                    .map((cmd) => `\`/${cmd.name}\` – ${cmd.description}`)
                     .join("\n")
                 return `**${categoryName}:**\n${cmdList}\n`
             }
@@ -32,12 +40,12 @@ export class HelpCommand extends Command {
 
             data.push(list(CommandCategory.GENERAL, "Основные"))
 
-            if (message.member.id === "199231799124164608") {
+            if (interaction.memberPermissions.has("Administrator")) {
                 data.push(list(CommandCategory.ADMIN, "Админские"))
             }
 
             data.push(
-                `Напишите \`${prefix} help\` и \`[command name]\`, чтобы получить подробную информацию. **Например:** \`${prefix} help help\``,
+                `Напишите \`/help\` и \`[command name]\`, чтобы получить подробную информацию. **Например:** \`/help help\``,
             )
 
             const embed = new EmbedBuilder()
@@ -45,18 +53,19 @@ export class HelpCommand extends Command {
                 .setDescription(data.join("\n"))
                 .setTimestamp()
                 .setTitle("Список команд")
-            message.channel.send({ embeds: [embed] })
-            message.delete()
-            return
+            return interaction.reply({
+                embeds: [embed],
+                ephemeral: true,
+            })
         }
 
-        const commandName = args.shift().toLowerCase()
         const command = this.core.commandsManager.getCommand(commandName)
 
         if (!command)
-            return message.channel.send(
-                `Команда не найдена, воспользуйтесь \`${prefix} help\` или проверьте корректность команды.`,
-            )
+            return interaction.reply({
+                content: `Команда не найдена, воспользуйтесь \`/help\` или проверьте корректность команды.`,
+                ephemeral: true,
+            })
 
         const embed = new EmbedBuilder()
             .setColor(color)
@@ -72,12 +81,14 @@ export class HelpCommand extends Command {
             addField(
                 "Использование",
                 command.usage
-                    .map((usage) => `\`${prefix} ${command.name} ${usage}\``)
+                    .map((usage) => `\`/${command.name} ${usage}\``)
                     .join("\n"),
             )
         // addField("Временное ограничение", `${command.cooldown || 3} секунд`)
 
-        message.channel.send({ embeds: [embed] })
-        message.delete()
+        interaction.reply({
+            embeds: [embed],
+            ephemeral: true,
+        })
     }
 }

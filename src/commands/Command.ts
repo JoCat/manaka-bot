@@ -8,37 +8,22 @@ import {
 
 import Core from "core/Core"
 
-import { Message } from "./CommandManager"
-
 export abstract class Command {
-    readonly name: string
-    readonly category: CommandCategory
-    readonly description: string
-    readonly usage?: string[]
-    readonly aliases?: string[]
-    readonly cooldown?: number
+    abstract readonly name: string
+    abstract readonly category: CommandCategory
+    abstract readonly description: string
+    abstract readonly usage?: string[]
+    abstract readonly aliases?: string[]
+    // abstract readonly cooldown?: number
 
     constructor(protected core: Core) {}
 
-    /**
-     * @deprecated
-     */
-    abstract run(message: Message, args: string[]): any
-
-    // New features
-
-    readonly commandData:
+    abstract readonly commandData:
         | SlashCommandBuilder
         | SlashCommandOptionsOnlyBuilder
         | SlashCommandSubcommandsOnlyBuilder
 
-    //TODO Temp
-    execute(interaction: ChatInputCommandInteraction<CacheType>): any {
-        interaction.reply({
-            content: `Команда \`${this.name}\` еще не перенесена`,
-            ephemeral: true,
-        })
-    }
+    abstract execute(interaction: ChatInputCommandInteraction<CacheType>): any
 }
 
 export enum CommandCategory {

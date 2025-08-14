@@ -11,7 +11,6 @@ import {
 } from "discord.js"
 
 import Core from "core/Core"
-import { availableChannelTypes } from "core/helpers/Utils"
 import { detectAsciiArt } from "core/helpers/antiASCIIArt"
 
 import { Command, CommandCategory } from "./Command"
@@ -34,21 +33,21 @@ export default class CommandManager {
         const rest = new REST({ version: "10" }).setToken(process.env.BOT_TOKEN)
 
         try {
-            console.log("Started refreshing application (/) commands.")
+            console.log("Started refreshing application commands")
 
             const data = await rest.put(
                 Routes.applicationCommands(process.env.CLIENT_ID),
                 {
-                    body: this.commands
-                        .filter((command) => command.commandData)
-                        .map((command) => command.commandData.toJSON()),
+                    body: this.commands.map((command) =>
+                        command.commandData.toJSON(),
+                    ),
                 },
             )
 
             console.log(
                 `Successfully reloaded ${
                     (<any[]>data).length
-                } application (/) commands.`,
+                } application commands`,
             )
         } catch (error) {
             console.error(error)
@@ -64,15 +63,11 @@ export default class CommandManager {
         this.registerCommand(new RoleReactionCommand(this.core))
         this.registerCommand(new VoiceRoomCommand(this.core))
 
-        // Deprecated
-        this.core.client.on("messageCreate", (message) => {
-            this.executeCommand(message)
-        })
+        // this.core.client.on("messageCreate", (message) => {
+        //     asciiArtFilter(message)
+        // })
 
-        // New
-        this.core.client.on("interactionCreate", async (interaction) => {
-            this.newExecuteCommand(interaction)
-        })
+        this.core.client.on("interactionCreate", this.executeCommand.bind(this))
     }
 
     registerCommand(command: Command): void {
@@ -87,46 +82,26 @@ export default class CommandManager {
     getCommand(commandName: string): Command | undefined {
         if (this.commands.has(commandName))
             return this.commands.get(commandName)
-        else if (this.commandAliases.has(commandName))
+        if (this.commandAliases.has(commandName))
             return this.commands.get(this.commandAliases.get(commandName))
     }
 
     checkPermissions(command: Command, user: GuildMember): boolean {
-        if (command.category === CommandCategory.ADMIN) {
-            let allowed = false
+        if (command.category !== CommandCategory.ADMIN) {
+            return true
+        }
 
-            if (
-                user.id === user.guild.ownerId ||
-                user.permissions.has(PermissionsBitField.Flags.Administrator)
-            )
-                allowed = true
+        if (
+            user.id === user.guild.ownerId ||
+            user.permissions.has(PermissionsBitField.Flags.Administrator)
+        ) {
+            return true
+        }
 
-            return allowed
-        } else return true
+        return false
     }
 
-    executeCommand(message: Message) {
-        if (this.asciiArtFilter(message)) return
-
-        const prefix = this.core.configManager.getConfig().prefix
-
-        if (message.author.bot) return
-        if (!availableChannelTypes.includes(message.channel.type)) return
-        if (!message.content.startsWith(`${prefix} `)) return
-
-        const args = message.content.slice(prefix.length).trim().split(/ +/)
-        const command = this.getCommand(args.shift().toLowerCase())
-
-        if (command) {
-            if (!this.checkPermissions(command, message.member))
-                return message.channel.send(
-                    "У вас нет прав для выполнения этой команды!",
-                )
-            command.run(message, args)
-        } else message.channel.send("Команда не найдена!")
-    }
-
-    async newExecuteCommand(interaction: Interaction<CacheType>) {
+    async executeCommand(interaction: Interaction<CacheType>) {
         if (!interaction.isChatInputCommand()) return
 
         const command = this.getCommand(interaction.commandName)

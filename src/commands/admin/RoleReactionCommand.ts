@@ -5,8 +5,6 @@ import {
     parseEmoji,
 } from "discord.js"
 
-import { Message } from "commands/CommandManager"
-
 import { findMessage } from "../../core/helpers/Utils"
 import { Command, CommandCategory } from "../Command"
 
@@ -57,18 +55,6 @@ export class RoleReactionCommand extends Command {
         .addSubcommand((subcommand) =>
             subcommand.setName("list").setDescription("Вывести список реакций"),
         )
-
-    async run(message: Message, [method]: string[]) {
-        if (method === undefined) {
-            return message.channel.send("**Ошибка при вводе команды!**")
-        }
-
-        if (["add", "remove", "list"].includes(method)) {
-            return message.channel.send("Используйте /role-reaction " + method)
-        }
-
-        message.channel.send(`**Ошибка!** Подкоманда \`${method}\` не найдена!`)
-    }
 
     execute(interaction: ChatInputCommandInteraction<"cached">) {
         const method = interaction.options.getSubcommand()

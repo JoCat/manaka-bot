@@ -5,8 +5,6 @@ import {
     SlashCommandBuilder,
 } from "discord.js"
 
-import { Message } from "commands/CommandManager"
-
 import { Command, CommandCategory } from "../Command"
 
 export class VoiceRoomCommand extends Command {
@@ -24,11 +22,6 @@ export class VoiceRoomCommand extends Command {
                 .setRequired(true)
                 .addChannelTypes(ChannelType.GuildVoice),
         )
-
-    // TODO Temp
-    run(message: Message) {
-        message.channel.send("Используйте /voiceroom <тег/id канала>")
-    }
 
     async execute(interaction: ChatInputCommandInteraction<CacheType>) {
         const channel = interaction.options.getChannel("channel", true, [
