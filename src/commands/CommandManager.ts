@@ -30,13 +30,15 @@ export default class CommandManager {
     }
 
     async registerCommands() {
-        const rest = new REST({ version: "10" }).setToken(process.env.BOT_TOKEN)
+        const rest = new REST({ version: "10" }).setToken(
+            this.core.configService.botToken,
+        )
 
         try {
             console.log("Started refreshing application commands")
 
             const data = await rest.put(
-                Routes.applicationCommands(process.env.CLIENT_ID),
+                Routes.applicationCommands(this.core.configService.clientID),
                 {
                     body: this.commands.map((command) =>
                         command.commandData.toJSON(),
@@ -72,11 +74,6 @@ export default class CommandManager {
 
     registerCommand(command: Command): void {
         this.commands.set(command.name, command)
-        if (command.aliases) {
-            command.aliases.forEach((alias) => {
-                this.commandAliases.set(alias, command.name)
-            })
-        }
     }
 
     getCommand(commandName: string): Command | undefined {

@@ -1,7 +1,7 @@
 import { ActivityType, Client, GatewayIntentBits } from "discord.js"
 
 import CommandManager from "./../commands/CommandManager"
-import ConfigManager from "./ConfigManager"
+import ConfigService from "./ConfigService"
 import JsonDBManager from "./JsonDBManager"
 import EventsManager from "./modules/reactRoles/EventsManager"
 import { VoiceRooms } from "./modules/voiceRooms"
@@ -16,7 +16,7 @@ export default class Core {
             GatewayIntentBits.MessageContent,
         ],
     })
-    configManager = new ConfigManager()
+    configService = new ConfigService()
     commandsManager = new CommandManager(this)
     jsonDBManager = new JsonDBManager()
     eventsManager = new EventsManager(this)
@@ -35,6 +35,6 @@ export default class Core {
             console.log("Bot started")
         })
 
-        this.client.login(this.configManager.botToken)
+        this.client.login(this.configService.botToken)
     }
 }

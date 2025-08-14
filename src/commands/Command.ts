@@ -12,8 +12,8 @@ export abstract class Command {
     abstract readonly name: string
     abstract readonly category: CommandCategory
     abstract readonly description: string
-    abstract readonly usage?: string[]
-    abstract readonly aliases?: string[]
+    readonly info?: string
+    readonly isDanger: boolean = false
     // abstract readonly cooldown?: number
 
     constructor(protected core: Core) {}

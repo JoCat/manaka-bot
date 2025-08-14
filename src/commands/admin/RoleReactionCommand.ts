@@ -9,13 +9,11 @@ import { findMessage } from "../../core/helpers/Utils"
 import { Command, CommandCategory } from "../Command"
 
 export class RoleReactionCommand extends Command {
-    name = "role-reaction"
-    category = CommandCategory.ADMIN
-    description = "управление выдачей ролей по реакии"
-    usage = ["add [id-сообщения] [id-роли] [emoji]", "remove [token]", "list"]
-    aliases = ["rr"]
+    override name = "role-reaction"
+    override category = CommandCategory.ADMIN
+    override description = "Управление выдачей ролей по реакции"
 
-    commandData = new SlashCommandBuilder()
+    override commandData = new SlashCommandBuilder()
         .setName(this.name)
         .setDescription(this.description)
         .addSubcommand((subcommand) =>
@@ -56,12 +54,14 @@ export class RoleReactionCommand extends Command {
             subcommand.setName("list").setDescription("Вывести список реакций"),
         )
 
-    execute(interaction: ChatInputCommandInteraction<"cached">) {
-        const method = interaction.options.getSubcommand()
+    override execute(interaction: ChatInputCommandInteraction<"cached">) {
+        const method = <"add" | "remove" | "list">(
+            interaction.options.getSubcommand(true)
+        )
         this[method](interaction)
     }
 
-    async add(interaction: ChatInputCommandInteraction<"cached">) {
+    private async add(interaction: ChatInputCommandInteraction<"cached">) {
         const messageID = interaction.options.getString("message-id", true)
         const roleID = interaction.options.getRole("role", true).id
         const emoji = interaction.options.getString("emoji", true)
@@ -112,7 +112,7 @@ export class RoleReactionCommand extends Command {
         interaction.editReply(`Уникальный токен события: \`${token}\``)
     }
 
-    remove(interaction: ChatInputCommandInteraction<"cached">) {
+    private remove(interaction: ChatInputCommandInteraction<"cached">) {
         const token = interaction.options.getString("token", true)
         if (this.core.eventsManager.removeEventListener(token)) {
             interaction.reply({
@@ -127,7 +127,7 @@ export class RoleReactionCommand extends Command {
         }
     }
 
-    list(interaction: ChatInputCommandInteraction<"cached">) {
+    private list(interaction: ChatInputCommandInteraction<"cached">) {
         const list = []
         this.core.eventsManager.getEvents().forEach((event, token) => {
             const emoji =
@@ -143,7 +143,7 @@ export class RoleReactionCommand extends Command {
             ephemeral: true,
             embeds: [
                 new EmbedBuilder()
-                    .setColor(this.core.configManager.getConfig().color)
+                    .setColor(this.core.configService.color)
                     .setDescription(list.join("\n"))
                     .setTitle("Список событий"),
             ],

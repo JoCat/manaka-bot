@@ -8,11 +8,15 @@ import {
 import { Command, CommandCategory } from "../Command"
 
 export class VoiceRoomCommand extends Command {
-    name = "voiceroom"
-    category = CommandCategory.ADMIN
-    description = "добавляет канал в список для создания голосовых комнат"
+    override name = "voiceroom"
+    override category = CommandCategory.ADMIN
+    override description =
+        "Привязка к голосовому каналу функционала автоматического создания голосовых комнат"
+    override isDanger = true
+    override info =
+        "Канал должен быть в отдельной категории не содержащей других голосовых каналов, иначе они будут удалены."
 
-    commandData = new SlashCommandBuilder()
+    override commandData = new SlashCommandBuilder()
         .setName(this.name)
         .setDescription(this.description)
         .addChannelOption((option) =>
@@ -23,7 +27,9 @@ export class VoiceRoomCommand extends Command {
                 .addChannelTypes(ChannelType.GuildVoice),
         )
 
-    async execute(interaction: ChatInputCommandInteraction<CacheType>) {
+    override async execute(
+        interaction: ChatInputCommandInteraction<CacheType>,
+    ) {
         const channel = interaction.options.getChannel("channel", true, [
             ChannelType.GuildVoice,
         ])

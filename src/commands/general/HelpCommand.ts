@@ -8,30 +8,31 @@ import {
 import { Command, CommandCategory } from "../Command"
 
 export class HelpCommand extends Command {
-    name = "help"
-    category = CommandCategory.GENERAL
-    description =
-        "выводит список всех команд или подробную информацию о команде"
-    usage = ["", "[command name]"]
-    aliases = ["h", "commands"]
+    override name = "help"
+    override category = CommandCategory.GENERAL
+    override description =
+        "Вывод списка всех команд или подробной информации о команде"
 
-    commandData = new SlashCommandBuilder()
+    override commandData = new SlashCommandBuilder()
         .setName(this.name)
         .setDescription(this.description)
         .addStringOption((option) =>
             option.setName("command").setDescription("название команды"),
         )
 
-    execute(interaction: ChatInputCommandInteraction<CacheType>) {
-        const commandName = interaction.options.getString("command")
-        const { color } = this.core.configManager.getConfig()
+    override execute(interaction: ChatInputCommandInteraction<CacheType>) {
+        const { color, version, ownerID, creatorID } = this.core.configService
 
+        const commandName = interaction.options.getString("command")
         if (!commandName) {
             const list = (category: CommandCategory, categoryName: string) => {
                 const cmdList = this.core.commandsManager
                     .getCommands()
                     .filter((cmd) => cmd.category === category)
-                    .map((cmd) => `\`/${cmd.name}\` – ${cmd.description}`)
+                    .map(
+                        (cmd) =>
+                            `${cmd.isDanger ? "⚠️" : "🔹"} \`/${cmd.name}\` – ${cmd.description}`,
+                    )
                     .join("\n")
                 return `**${categoryName}:**\n${cmdList}\n`
             }
@@ -45,7 +46,12 @@ export class HelpCommand extends Command {
             }
 
             data.push(
-                `Напишите \`/help\` и \`[command name]\`, чтобы получить подробную информацию. **Например:** \`/help help\``,
+                "Напишите `/help` и `[название команды]`, чтобы получить подробную информацию о команде.",
+                "Например: `/help help`",
+                "### Внимание! Перед выполнением команд, помеченных символом ⚠️, ознакомьтесь с их описанием!",
+                `-# **Создатель бота:** <@${creatorID}>`,
+                `-# **Владелец бота:** <@${ownerID}>`,
+                `-# **Версия: ${version}**`,
             )
 
             const embed = new EmbedBuilder()
@@ -75,15 +81,8 @@ export class HelpCommand extends Command {
         const addField = (name: string, value: string) =>
             embed.addFields({ name, value })
 
-        if (command.aliases) addField("Псевдонимы", command.aliases.join(", "))
         if (command.description) addField("Описание", command.description)
-        if (command.usage)
-            addField(
-                "Использование",
-                command.usage
-                    .map((usage) => `\`/${command.name} ${usage}\``)
-                    .join("\n"),
-            )
+        if (command.info) addField("Дополнительная информация", command.info)
         // addField("Временное ограничение", `${command.cooldown || 3} секунд`)
 
         interaction.reply({
