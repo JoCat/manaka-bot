@@ -1,6 +1,6 @@
 {
     "name": "manaka-bot",
-    "version": "0.0.2",
+    "version": "0.1.0",
     "description": "Yet another bot for Discord",
     "main": "dist/index.js",
     "scripts": {
@@ -32,7 +32,7 @@
         "@discordjs/voice": "^0.18.0",
         "bufferutil": "^4.0.8",
         "discord.js": "^14.16.3",
-        "dotenv": "^16.4.5",
+        "dotenv": "^17.2.1",
         "erlpack": "github:discord/erlpack",
         "ffmpeg-static": "^5.2.0",
         "libsodium-wrappers": "^0.7.15",
@@ -48,7 +48,7 @@
         "@types/node": "^22.8.4",
         "concurrently": "^9.0.1",
         "eslint": "^9.13.0",
-        "globals": "^15.11.0",
+        "globals": "^16.3.0",
         "nodemon": "^3.1.7",
         "prettier": "^3.3.3",
         "tsup": "^8.3.5",
