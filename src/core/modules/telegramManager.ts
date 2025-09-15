@@ -38,7 +38,7 @@ export class TelegramManager {
                     channel.send(
                         bold(
                             `${ctx.from.first_name} ${ctx.from.last_name || ""} (${ctx.from.username}): `,
-                        ) + ctx.text,
+                        ) + (ctx.text || "Неподдерживаемое сообщение"),
                     )
                 }
             })
@@ -53,7 +53,15 @@ export class TelegramManager {
 
             this.botInstance.telegram.sendMessage(
                 chatId,
-                `${Format.bold(`${message.author.displayName} (${message.author.username}):`)} ${message.content}`,
+                Format.join(
+                    [
+                        Format.bold(
+                            `${message.author.displayName} (${message.author.username}):`,
+                        ),
+                        message.content,
+                    ],
+                    " ",
+                ),
             )
         })
     }
