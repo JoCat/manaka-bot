@@ -1,8 +1,7 @@
 services:
     bot:
         build: .
-        environment:
-            BOT_TOKEN: ${BOT_TOKEN}
-            DEV: ${DEV}
+        env_file:
+            - .env
         volumes:
             - ./runtime:/../runtime
