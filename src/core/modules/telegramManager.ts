@@ -1,7 +1,6 @@
-import { Events } from "discord.js"
-import { Telegraf } from "telegraf"
+import { bold, Events } from "discord.js"
+import { Format, Telegraf } from "telegraf"
 import { ChatFromGetChat } from "telegraf/typings/core/types/typegram"
-import { bold } from "telegraf/typings/format"
 
 import { Message } from "commands/CommandManager"
 import Core from "core/Core"
@@ -37,7 +36,9 @@ export class TelegramManager {
             this.core.client.channels.fetch(channelId).then((channel) => {
                 if (channel.isSendable()) {
                     channel.send(
-                        `**${ctx.from.first_name} ${ctx.from.last_name || ""} (${ctx.from.username}):** ${ctx.text}`,
+                        bold(
+                            `${ctx.from.first_name} ${ctx.from.last_name || ""} (${ctx.from.username}): `,
+                        ) + ctx.text,
                     )
                 }
             })
@@ -52,7 +53,7 @@ export class TelegramManager {
 
             this.botInstance.telegram.sendMessage(
                 chatId,
-                `${bold(`${message.author.displayName} (${message.author.username}):`)} ${message.content}`,
+                `${Format.bold(`${message.author.displayName} (${message.author.username}):`)} ${message.content}`,
             )
         })
     }
