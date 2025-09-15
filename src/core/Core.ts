@@ -1,4 +1,4 @@
-import { ActivityType, Client, GatewayIntentBits } from "discord.js"
+import { ActivityType, Client, Events, GatewayIntentBits } from "discord.js"
 
 import CommandManager from "./../commands/CommandManager"
 import ConfigService from "./ConfigService"
@@ -26,7 +26,7 @@ export default class Core {
     constructor() {
         new VoiceRooms(this)
 
-        this.client.on("ready", () => {
+        this.client.on(Events.ClientReady, () => {
             this.eventsManager.handle()
 
             this.client.user.setActivity(

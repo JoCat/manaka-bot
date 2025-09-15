@@ -75,8 +75,8 @@ export class TelegramManager {
             )
         }
 
-        if (chat.type !== "group") {
-            throw new Error("Чат должен быть групповой")
+        if (chat.type !== "group" && chat.type !== "supergroup") {
+            throw new Error("Чат должен быть группой или супергруппой")
         }
 
         this.core.jsonDBManager.addData("telegramChannels", {
