@@ -1,6 +1,6 @@
 {
     "name": "manaka-bot",
-    "version": "0.2.4",
+    "version": "0.2.5",
     "description": "Yet another bot for Discord",
     "main": "dist/index.js",
     "scripts": {

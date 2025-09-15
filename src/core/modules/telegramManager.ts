@@ -56,7 +56,7 @@ export class TelegramManager {
                 Format.join(
                     [
                         Format.bold(
-                            `${message.author.displayName} (${message.author.username}):`,
+                            `${message.member.displayName} (${message.author.username}):`,
                         ),
                         message.content,
                     ],
