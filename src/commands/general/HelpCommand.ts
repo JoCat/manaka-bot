@@ -2,6 +2,7 @@ import {
     CacheType,
     ChatInputCommandInteraction,
     EmbedBuilder,
+    MessageFlags,
     SlashCommandBuilder,
 } from "discord.js"
 
@@ -61,7 +62,7 @@ export class HelpCommand extends Command {
                 .setTitle("Список команд")
             return interaction.reply({
                 embeds: [embed],
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             })
         }
 
@@ -70,7 +71,7 @@ export class HelpCommand extends Command {
         if (!command)
             return interaction.reply({
                 content: `Команда не найдена, воспользуйтесь \`/help\` или проверьте корректность команды.`,
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             })
 
         const embed = new EmbedBuilder()
@@ -87,7 +88,7 @@ export class HelpCommand extends Command {
 
         interaction.reply({
             embeds: [embed],
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
         })
     }
 }

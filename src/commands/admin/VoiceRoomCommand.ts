@@ -2,6 +2,7 @@ import {
     CacheType,
     ChannelType,
     ChatInputCommandInteraction,
+    MessageFlags,
     SlashCommandBuilder,
 } from "discord.js"
 
@@ -22,7 +23,7 @@ export class VoiceRoomCommand extends Command {
         .addChannelOption((option) =>
             option
                 .setName("channel")
-                .setDescription("тег/id канала")
+                .setDescription("голосовой канал")
                 .setRequired(true)
                 .addChannelTypes(ChannelType.GuildVoice),
         )
@@ -37,7 +38,7 @@ export class VoiceRoomCommand extends Command {
         if (!channel.parent) {
             return interaction.reply({
                 content: `У канала отсутствует родительская категория!`,
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             })
         }
 
@@ -48,14 +49,14 @@ export class VoiceRoomCommand extends Command {
         if (voiceRooms.includes(channel.id)) {
             return interaction.reply({
                 content: "Канал уже добавлен в список!",
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             })
         }
 
         this.core.jsonDBManager.addData("voiceRooms", { channel: channel.id })
         interaction.reply({
             content: "Канал добавлен в список!",
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
         })
     }
 }

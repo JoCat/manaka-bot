@@ -8,6 +8,7 @@ import {
     PermissionsBitField,
     REST,
     Routes,
+    MessageFlags,
 } from "discord.js"
 
 import Core from "core/Core"
@@ -15,6 +16,7 @@ import { detectAsciiArt } from "core/helpers/antiASCIIArt"
 
 import { Command, CommandCategory } from "./Command"
 import { RoleReactionCommand } from "./admin/RoleReactionCommand"
+import { TelegramConnectCommand } from "./admin/TelegramConnectCommand"
 import { VoiceRoomCommand } from "./admin/VoiceRoomCommand"
 import { HelpCommand } from "./general/HelpCommand"
 
@@ -64,6 +66,7 @@ export default class CommandManager {
         this.registerCommand(new HelpCommand(this.core))
         this.registerCommand(new RoleReactionCommand(this.core))
         this.registerCommand(new VoiceRoomCommand(this.core))
+        this.registerCommand(new TelegramConnectCommand(this.core))
 
         // this.core.client.on("messageCreate", (message) => {
         //     asciiArtFilter(message)
@@ -106,14 +109,14 @@ export default class CommandManager {
         if (!command) {
             return await interaction.reply({
                 content: "Команда не найдена!",
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             })
         }
 
         if (!this.checkPermissions(command, <GuildMember>interaction.member)) {
             return await interaction.reply({
                 content: "У вас нет прав для выполнения этой команды!",
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             })
         }
 

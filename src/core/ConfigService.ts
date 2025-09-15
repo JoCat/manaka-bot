@@ -13,4 +13,6 @@ export default class ConfigService {
     public readonly version = version
 
     public readonly color = this.dev ? "#ff0000" : "#00aaff"
+
+    public readonly tgBotToken = process.env.TG_BOT_TOKEN
 }

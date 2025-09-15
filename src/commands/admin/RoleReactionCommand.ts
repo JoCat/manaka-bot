@@ -1,6 +1,7 @@
 import {
     ChatInputCommandInteraction,
     EmbedBuilder,
+    MessageFlags,
     SlashCommandBuilder,
     parseEmoji,
 } from "discord.js"
@@ -70,7 +71,7 @@ export class RoleReactionCommand extends Command {
         if (parsedEmoji === null) {
             return interaction.reply({
                 content: "**Ошибка!** Указан некорректный Emoji!",
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             })
         }
 
@@ -82,13 +83,13 @@ export class RoleReactionCommand extends Command {
             return interaction.reply({
                 content:
                     "**Ошибка!** Событие на данном сообщении с таким же эмодзи уже существует!",
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             })
         }
 
         interaction.reply({
             content: "Поиск сообщения...",
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
         })
 
         /* Долгая хрень */
@@ -117,12 +118,12 @@ export class RoleReactionCommand extends Command {
         if (this.core.eventsManager.removeEventListener(token)) {
             interaction.reply({
                 content: "Событие удалено",
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             })
         } else {
             interaction.reply({
                 content: "Событие не найдено",
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             })
         }
     }
@@ -140,7 +141,7 @@ export class RoleReactionCommand extends Command {
         })
         if (list.length === 0) list.push("*Список пуст*")
         interaction.reply({
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
             embeds: [
                 new EmbedBuilder()
                     .setColor(this.core.configService.color)

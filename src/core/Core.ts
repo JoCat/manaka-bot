@@ -4,6 +4,7 @@ import CommandManager from "./../commands/CommandManager"
 import ConfigService from "./ConfigService"
 import JsonDBManager from "./JsonDBManager"
 import EventsManager from "./modules/reactRoles/EventsManager"
+import { TelegramManager } from "./modules/telegramManager"
 import { VoiceRooms } from "./modules/voiceRooms"
 
 export default class Core {
@@ -20,6 +21,7 @@ export default class Core {
     commandsManager = new CommandManager(this)
     jsonDBManager = new JsonDBManager()
     eventsManager = new EventsManager(this)
+    telegramManager = new TelegramManager(this)
 
     constructor() {
         new VoiceRooms(this)
